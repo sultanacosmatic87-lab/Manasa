@@ -1,2 +1,0 @@
-# Manasa
-index.html
