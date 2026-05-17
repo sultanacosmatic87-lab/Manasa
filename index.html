@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -6,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصتي التعليمية - Dashboard Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- مكتبة توليد الـ QR المعتمدة والخفيفة لضمان الأداء الفوري -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Cairo', sans-serif; background-color: #F8FBFF; overflow-x: hidden; }
@@ -18,8 +19,8 @@
         .style-chem { background: linear-gradient(135deg, #7C3AED, #C084FC); }
         .style-phy { background: linear-gradient(135deg, #F59E0B, #FCD34D); }
         .style-bio { background: linear-gradient(135deg, #10B981, #6EE7B7); }
-        .style-arabic { background: linear-gradient(135deg, #EC4899, #FBCFE8); } /* ثيم وردي مودرن للغة العربية */
-        .style-english { background: linear-gradient(135deg, #1E3A8A, #3B82F6); } /* ثيم نيلي للغة الإنجليزية */
+        .style-arabic { background: linear-gradient(135deg, #EC4899, #FBCFE8); } 
+        .style-english { background: linear-gradient(135deg, #1E3A8A, #3B82F6); } 
         
         .admin-card { background: white; border: 1px solid #f1f5f9; border-radius: 2rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
         input, select { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.875rem; outline: none; transition: all 0.3s; }
@@ -29,21 +30,33 @@
         .modal-active { display: flex; animation: slideUp 0.4s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        /* تأثيرات حركة السلايد بار الجانبي */
         .sidebar-transition { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        /* تنسيقات الطباعة المخصصة لبطاقة الطالب الاستوديو */
+        /* التنسيق الجديد والمضمون للطباعة وتوليد الـ PDF في الأندرويد والمتصفحات بمقاس A4 */
         @media print {
-            body * { visibility: hidden; background: transparent !important; }
-            #print-card-area, #print-card-area * { visibility: visible; }
-            #print-card-area { position: absolute; left: 0; top: 0; width: 100%; max-width: 100%; right: 0; }
+            @page { size: A4 portrait; margin: 0; }
+            html, body { width: 210mm; height: 297mm; background: white !important; min-width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+            #home-view, #courses-view, #admin-view, nav, #app-sidebar, #sidebar-overlay, #sub-modal, #edit-student-modal, #pay-modal { 
+                display: none !important; 
+                visibility: hidden !important; 
+            }
+            #print-card-area { 
+                display: block !important; 
+                visibility: visible !important; 
+                width: 100% !important;
+                max-width: 100% !important;
+                position: static !important;
+                padding: 20mm !important; /* حواف الأمان لورقة A4 */
+                margin: 0 !important;
+                box-sizing: border-box !important;
+            }
         }
     </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen bg-slate-50 shadow-2xl relative pb-24">
 
-    <!-- حاوية مخفية لغرض توليد وطباعة البطاقة الذكية بجودة عالية -->
-    <div id="print-card-area" class="hidden print:block p-6"></div>
+    <!-- حاوية عرض وطباعة البطاقة الذكية والوصولات الماليّة بجودة عالية -->
+    <div id="print-card-area" class="hidden p-6"></div>
 
     <!-- السلايد بار الجانبي -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[300] hidden max-w-md mx-auto"></div>
@@ -64,7 +77,7 @@
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-sky-200 flex items-center justify-center text-sm font-bold text-sky-700">ك</div>
                     <div>
-                        <h4 id="sb-student-name" class="text-xs font-black text-slate-800">كرار حيدر</h4>
+                        <h4 id="sb-student-name" class="text-xs font-black text-slate-800">...</h4>
                         <p class="text-[9px] text-slate-400">حالة الحساب: <span class="text-green-500 font-bold">نشط</span></p>
                     </div>
                 </div>
@@ -157,13 +170,14 @@
             </div>
         </header>
 
+        <!-- السلايدر الرئيسي المطور -->
         <div id="main-slider" class="w-full h-40 rounded-[2.5rem] p-6 text-white relative overflow-hidden shadow-xl transition-all duration-700 slide-1">
             <h4 id="slide-main-title" class="text-xl font-black mb-1">لوحة تحكم ذكية</h4>
-            <p class="text-[10px] opacity-80 font-bold">إدارة المدرسين والطلاب في مكان واحد</p>
-            <div id="slider-dots" class="absolute left-6 bottom-6 flex gap-1"></div>
+            <p id="slide-sub-title" class="text-[10px] opacity-80 font-bold">إدارة المدرسين والطلاب في مكان واحد</p>
+            <div id="slider-dots" class="absolute left-6 bottom-6 flex gap-1.5"></div>
         </div>
 
-        <!-- حاوية المواد بالشاشة الرئيسية (سيتم تعبئتها بـ 6 مواد تلقائياً) -->
+        <!-- حاوية المواد بالشاشة الرئيسية -->
         <div id="subjects-container" class="grid grid-cols-2 gap-4"></div>
     </section>
 
@@ -202,6 +216,7 @@
             <button onclick="switchAdminTab('t-manage')" class="adm-tab active-tab bg-sky-600 text-white px-5 py-2 rounded-xl text-xs font-bold shrink-0 shadow-md transition-all">إدارة المدرسين</button>
             <button onclick="switchAdminTab('c-manage')" class="adm-tab bg-white text-slate-400 px-5 py-2 rounded-xl text-xs font-bold shrink-0 border border-slate-100 transition-all">إدارة المحتوى</button>
             <button onclick="switchAdminTab('s-manage')" class="adm-tab bg-white text-slate-400 px-5 py-2 rounded-xl text-xs font-bold shrink-0 border border-slate-100 transition-all">إدارة الطلاب</button>
+            <button onclick="switchAdminTab('f-manage')" class="adm-tab bg-white text-slate-400 px-5 py-2 rounded-xl text-xs font-bold shrink-0 border border-slate-100 transition-all">💰 صندوق الحسابات</button>
         </div>
 
         <!-- إدارة المدرسين -->
@@ -278,16 +293,13 @@
                 <input type="text" id="adm-co-title" placeholder="اسم الدورة">
                 <select id="adm-co-teacher" class="w-full"></select>
                 
-                <!-- وقت المحاضرة -->
                 <div class="flex flex-col gap-1">
                     <label class="text-[11px] font-bold text-slate-500 mr-1">⏰ وقت بدء المحاضرة:</label>
                     <input type="time" id="adm-co-time" class="w-full">
                 </div>
 
-                <!-- مدة المحاضرة بالساعات -->
                 <input type="number" id="adm-co-duration" placeholder="مدة المحاضرة (بالساعات - مثال: 2)" min="1">
 
-                <!-- اختيار أيام الأسبوع المتعددة -->
                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-2">
                     <label class="text-[11px] font-bold text-slate-500 block">📅 الأيام المحددة للدورة:</label>
                     <div class="grid grid-cols-3 gap-2 text-[11px] font-bold text-slate-700">
@@ -300,7 +312,6 @@
                     </div>
                 </div>
 
-                <!-- نظام التنبيه قبل بيوم للمدرس والطالب -->
                 <div class="flex items-center justify-between p-3 bg-amber-50/50 border border-amber-100 rounded-xl">
                     <div class="flex flex-col">
                         <span class="text-xs font-black text-amber-800">🔔 تفعيل التنبيه الذكي قبل بـ 24 ساعة</span>
@@ -319,7 +330,6 @@
 
         <!-- إدارة الطلاب -->
         <div id="adm-s-manage" class="admin-section hidden space-y-4">
-            <!-- نموذج تسجيل الطلاب الجديد -->
             <div class="admin-card space-y-3 border-sky-100">
                 <h4 class="font-black text-sm text-sky-700">👤 تسجيل طالب جديد وتوليد كود الدخول</h4>
                 <div class="flex flex-col gap-2">
@@ -342,9 +352,19 @@
                         <option value="دورات">دورات خاصة</option>
                     </select>
 
-                    <select id="adm-s-course" class="w-full">
-                        <!-- يتم ملؤها ديناميكياً بالدورات المتاحة -->
-                    </select>
+                    <select id="adm-s-course" class="w-full"></select>
+
+                    <!-- حقول الحسابات المدمجة الذكية للتسجيل -->
+                    <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-slate-500 mr-1">💰 سعر الاشتراك الكلي:</span>
+                            <input type="number" id="adm-s-price" placeholder="مثال: 150000" class="w-full">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-bold text-slate-500 mr-1">💵 المبلغ المدفوع حالياً:</span>
+                            <input type="number" id="adm-s-paid" placeholder="مثال: 50000" class="w-full">
+                        </div>
+                    </div>
 
                     <button onclick="actionRegisterStudent()" class="bg-sky-600 text-white py-3 rounded-xl font-black text-sm shadow-lg mt-1">
                         ✨ تسجيل الطالب وتوليد كود الدخول
@@ -362,17 +382,188 @@
             <div class="admin-card">
                 <h4 class="font-black text-sm text-slate-700 mb-2">👥 قائمة الطلاب المسجلين</h4>
                 
-                <!-- حقل البحث الجديد المتناسق مع التصميم -->
                 <div class="mb-4 relative">
                     <input type="text" id="student-search-input" oninput="refreshStudentsList()" placeholder="🔍 ابحث عن الطالب بالاسم هنا..." class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-4 text-xs font-bold outline-none focus:border-sky-500">
                 </div>
 
-                <div id="students-list" class="space-y-3">
-                    <!-- يتم تحميل الطلاب برمجياً هنا -->
+                <div id="students-list" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- صندوق الحسابات والمستحقات والتقارير الشاملة -->
+        <div id="adm-f-manage" class="admin-section hidden space-y-4">
+            <div class="admin-card space-y-3 border-emerald-100">
+                <h4 class="font-black text-sm text-emerald-700">📊 الملخص المالي العام والتقارير للأرباح</h4>
+                
+                <!-- فلاتر التقارير الدورية (شهري وسنوي) -->
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] font-bold text-slate-400">📅 فلتر حسب الشهر:</span>
+                        <select id="fin-filter-month" onchange="refreshFinancialsView()" class="p-1.5 text-xs">
+                            <option value="كل الأشهر">كل الأشهر</option>
+                            <option value="/01/">كانون الثاني (01)</option>
+                            <option value="/02/">شباط (02)</option>
+                            <option value="/03/">آذار (03)</option>
+                            <option value="/04/">نيسان (04)</option>
+                            <option value="/05/">أيار (05)</option>
+                            <option value="/06/">حزيران (06)</option>
+                            <option value="/07/">تموز (07)</option>
+                            <option value="/08/">آب (08)</option>
+                            <option value="/09/">أيلول (09)</option>
+                            <option value="/10/">تشرين الأول (10)</option>
+                            <option value="/11/">تشرين الثاني (11)</option>
+                            <option value="/12/">تشرين الثاني (12)</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] font-bold text-slate-400">📅 فلتر حسب السنة:</span>
+                        <select id="fin-filter-year" onchange="refreshFinancialsView()" class="p-1.5 text-xs">
+                            <option value="كل السنين">كل السنين</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- شبكة لوحة الإحصائيات والأرباح الفردية والكلية -->
+                <div class="grid grid-cols-2 gap-2 text-center">
+                    <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl">
+                        <p class="text-[9px] font-bold text-slate-500">📥 إجمالي المقبوضات (أقساط)</p>
+                        <p id="fin-total-in" class="text-xs font-black text-emerald-700">0 د.ع</p>
+                    </div>
+                    <div class="bg-rose-50 border border-rose-100 p-2.5 rounded-xl">
+                        <p class="text-[9px] font-bold text-slate-500">⏳ أقساط الطلاب المتبقية</p>
+                        <p id="fin-total-debt" class="text-xs font-black text-rose-600">0 د.ع</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-100 p-2.5 rounded-xl">
+                        <p class="text-[9px] font-bold text-slate-500">💸 إجمالي المصاريف</p>
+                        <p id="fin-total-expenses" class="text-xs font-black text-amber-700">0 د.ع</p>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-100 p-2.5 rounded-xl">
+                        <p class="text-[9px] font-bold text-slate-500">👨‍🏫 مستحقات المدرسين المصروفة</p>
+                        <p id="fin-total-teacher-paid" class="text-xs font-black text-purple-700">0 د.ع</p>
+                    </div>
+                </div>
+
+                <!-- حاوية صافي الأرباح الرئيسية للمنصة -->
+                <div class="p-3 bg-gradient-to-r from-sky-600 to-teal-600 rounded-2xl text-center text-white shadow-md">
+                    <p class="text-[10px] font-bold opacity-90">💰 صافي أرباح المنصة الفعلي للتقرير المحدد</p>
+                    <p id="fin-net-profit" class="text-base font-black mt-0.5">0 د.ع</p>
+                </div>
+            </div>
+
+            <!-- إضافة حقل جديد: تسجيل وإدخال مصاريف المنصة العامة -->
+            <div class="admin-card space-y-3 border-amber-200 bg-amber-50/10">
+                <h4 class="font-black text-sm text-amber-700 flex items-center gap-1">💸 تسجيل مصروفات عامة للمنصة</h4>
+                <div class="flex flex-col gap-2">
+                    <input type="text" id="adm-expense-title" placeholder="عنوان المصروف (مثال: إيجار، إنترنت، كهرباء)">
+                    <input type="number" id="adm-expense-amount" placeholder="المبلغ المصروف بالدنانير">
+                    <button onclick="actionSubmitExpense()" class="bg-amber-600 text-white py-2.5 rounded-xl font-black text-xs shadow-md">
+                        ✔ قيد وحفظ المصروف الحالي
+                    </button>
+                </div>
+            </div>
+
+            <!-- الحقل الجديد: حقل حسابات المدرسين وصرف المستحقات -->
+            <div class="admin-card space-y-3 border-purple-200 bg-purple-50/10">
+                <h4 class="font-black text-sm text-purple-700 flex items-center gap-1">💸 صرف قسط مالي للمدرس</h4>
+                <div class="flex flex-col gap-2">
+                    <select id="adm-f-teacher-select" class="w-full" onchange="updateTeacherFinCourses()"></select>
+                    <select id="adm-f-course-select" class="w-full"></select>
+                    <input type="number" id="adm-f-teacher-amount" placeholder="المبلغ المراد صرفه للأستاذ">
+                    <button onclick="actionSubmitTeacherPayment()" class="bg-purple-600 text-white py-3 rounded-xl font-black text-xs shadow-md">
+                        🖨️ تأكيد الصرف وتوليد وصل المدرس
+                    </button>
+                </div>
+            </div>
+
+            <!-- حقل عرض: سجل المصاريف العامة للمنصة -->
+            <div class="admin-card border-amber-100">
+                <h4 class="font-black text-sm text-amber-700 mb-2">📋 سجل تفاصيل مصاريف المنصة العامة</h4>
+                <div id="fin-expenses-list" class="space-y-2 max-h-40 overflow-y-auto no-scrollbar text-[11px]">
+                    <p class="text-slate-400 italic text-center py-2">لا توجد مصاريف عامة مسجلة بعد.</p>
+                </div>
+            </div>
+
+            <!-- الحقل الجديد: سجل وصولات المدرسين المصروفة -->
+            <div class="admin-card border-purple-100">
+                <h4 class="font-black text-sm text-purple-700 mb-2">📋 سجل وصولات المدرسين المصروفة</h4>
+                <div id="fin-teacher-receipts-list" class="space-y-2 max-h-40 overflow-y-auto no-scrollbar text-[11px]">
+                    <p class="text-slate-400 italic text-center py-2">لا توجد وصولات مصروفة للمدرسين بعد.</p>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h4 class="font-black text-sm text-slate-700 mb-2">📋 سجل وصولات أقساط الطلاب المقبوضة</h4>
+                <div id="fin-receipts-list" class="space-y-2 max-h-48 overflow-y-auto no-scrollbar text-[11px]">
+                    <p class="text-slate-400 italic text-center py-4">لا توجد وصولات مالية بعد.</p>
+                </div>
+            </div>
+
+            <div class="admin-card border-purple-100">
+                <h4 class="font-black text-sm text-purple-700 mb-2">👨‍🏫 مستحقات المدرسين من الاشتراكات</h4>
+                <div id="fin-teachers-list" class="space-y-2 text-[11px]">
+                    <p class="text-slate-400 italic text-center py-2">لا يوجد مدرسين مسجلين لاحتساب نسبهم.</p>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- مودال تعديل بيانات الطالب المنبثق -->
+    <div id="edit-student-modal" class="fixed inset-0 bg-slate-900/60 z-[400] hidden items-end justify-center backdrop-blur-sm">
+        <div class="bg-white w-full rounded-t-[3rem] p-6 space-y-4 max-h-[85vh] overflow-y-auto">
+            <h3 class="text-xl font-black text-slate-800 tracking-tighter">✏️ تعديل بيانات الطالب</h3>
+            <input type="hidden" id="edit-s-id">
+            <div class="flex flex-col gap-2">
+                <input type="text" id="edit-s-name" placeholder="اسم الطالب الثلاثي">
+                <input type="tel" id="edit-s-phone" placeholder="رقم هاتف الطالب">
+                <input type="text" id="edit-s-parent" placeholder="اسم ولي الأمر">
+                <input type="tel" id="edit-s-parent-phone" placeholder="رقم هاتف ولي الأمر">
+                
+                <select id="edit-s-grade" class="w-full">
+                    <option value="الأول متوسط">الأول متوسط</option>
+                    <option value="الثاني متوسط">الثاني متوسط</option>
+                    <option value="الثالث متوسط">الثالث متوسط</option>
+                    <option value="الرابع إعدادي">الرابع إعدادي</option>
+                    <option value="الخامس إعدادي">الخامس إعدادي</option>
+                    <option value="السادس إعدادي">السادس إعدادي</option>
+                </select>
+
+                <select id="edit-s-type" class="w-full" onchange="toggleEditCourseSelection()">
+                    <option value="إلكتروني">إلكتروني عام</option>
+                    <option value="دورات">دورات خاصة</option>
+                </select>
+
+                <select id="edit-s-course" class="w-full"></select>
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button onclick="actionUpdateStudent()" class="bg-sky-600 text-white py-3 rounded-xl font-black text-xs shadow-lg">حفظ التعديلات</button>
+                <button onclick="closeEditModal()" class="bg-slate-100 text-slate-500 py-3 rounded-xl font-bold text-xs">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تسديد دفعة جديدة منبثق -->
+    <div id="pay-modal" class="fixed inset-0 bg-slate-900/60 z-[410] hidden items-end justify-center backdrop-blur-sm">
+        <div class="bg-white w-full rounded-t-[3rem] p-6 space-y-4">
+            <h3 class="text-xl font-black text-slate-800 tracking-tighter">💵 تسجيل دفعة مالية جديدة</h3>
+            <input type="hidden" id="pay-s-id">
+            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-xs text-slate-600 space-y-1">
+                <p>👤 <b>طالب:</b> <span id="pay-info-name" class="font-bold text-slate-800">...</span></p>
+                <p>📊 <b>الحساب الكلي:</b> <span id="pay-info-total">0</span> د.ع</p>
+                <p>✅ <b>المدفوع سابقاً:</b> <span id="pay-info-paid" class="text-emerald-600 font-bold">0</span> د.ع</p>
+                <p>⏳ <b>المتبقي بذمته:</b> <span id="pay-info-debt" class="text-rose-600 font-bold">0</span> د.ع</p>
+            </div>
+            <div class="flex flex-col gap-1">
+                <span class="text-xs font-bold text-slate-500 mr-1">💰 مبلغ الدفعة الحالية المستلمة:</span>
+                <input type="number" id="pay-amount-input" placeholder="أدخل المبلغ المستلم">
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button onclick="actionSubmitNewPayment()" class="bg-emerald-600 text-white py-3 rounded-xl font-black text-xs shadow-lg">تأكيد وقبض الحساب</button>
+                <button onclick="closePayModal()" class="bg-slate-100 text-slate-500 py-3 rounded-xl font-bold text-xs">إلغاء</button>
+            </div>
+        </div>
+    </div>
 
     <!-- شريط التنقل السفلي -->
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-md border-t border-slate-100 p-4 flex justify-around rounded-t-[2.5rem] shadow-2xl z-50">
@@ -391,20 +582,24 @@
     </div>
 
     <script>
-        // 1. قاعدة البيانات المحلية المتكاملة
+        // دمج وتوسيع قاعدة البيانات لتشمل منظومة الحسابات والوصولات والمصاريف بالكامل دون تغيير البيانات القديمة
         let db = JSON.parse(localStorage.getItem('MN_EDU_DB')) || {
             subjects: ["الرياضيات", "الكيمياء", "الفيزياء", "الاحياء", "اللغة العربية", "اللغة الانجليزية"],
             teachers: [],
             students: [],
             courses: [],
-            attendanceLogs: []
+            attendanceLogs: [],
+            payments: [], // سجل الوصولات والدفعات الماليّة للطلاب
+            teacherPayments: [], // قاعدة بيانات وصولات المدرسين المصروفة
+            expenses: [] // سجل المصاريف التشغيلية المضافة للمنصة
         };
 
-        // التحقق لضمان إدخال المواد الجديدة في التخزين في حال كان فارغاً عند العميل
         if (!db.subjects.includes("اللغة العربية")) db.subjects.push("اللغة العربية");
         if (!db.subjects.includes("اللغة الانجليزية")) db.subjects.push("اللغة الانجليزية");
+        if (!db.payments) db.payments = [];
+        if (!db.teacherPayments) db.teacherPayments = []; 
+        if (!db.expenses) db.expenses = []; 
 
-        // ثيمات الخلفيات والأيقونات لكل مادة
         const subStyles = {
             'الرياضيات': {icon:'📐', class:'style-math'},
             'الكيمياء': {icon:'🧪', class:'style-chem'},
@@ -413,6 +608,77 @@
             'اللغة العربية': {icon:'📝', class:'style-arabic'},
             'اللغة الانجليزية': {icon:'🔤', class:'style-english'}
         };
+
+        // --- مصفوفة بيانات السلايدر لتسهيل التحكم بالإعلانات والنصوص ---
+        const slidesData = [
+            { title: "لوحة تحكم ذكية", sub: "إدارة المدرسين والطلاب في مكان واحد", class: "slide-1" },
+            { title: "احصائيات مالية دقيقة", sub: "متابعة الأقساط وصافي الأرباح أولاً بأول", class: "slide-2" },
+            { title: "جدولة ذكية للمحاضرات", sub: "تنبيهات تلقائية قبل بدء الدروس بـ 24 ساعة", class: "slide-3" }
+        ];
+        let currentSlideIndex = 0;
+        let sliderInterval;
+
+        // دالة تهيئة وبناء نقاط السلايدر والتحكم به
+        function initSlider() {
+            const dotsContainer = document.getElementById('slider-dots');
+            if (!dotsContainer) return;
+
+            // توليد النقاط بناءً على حجم المصفوفة
+            dotsContainer.innerHTML = slidesData.map((_, index) => `
+                <span onclick="goToSlide(${index})" id="dot-${index}" class="w-2.5 h-2.5 rounded-full bg-white/40 cursor-pointer transition-all duration-300"></span>
+            `).join('');
+
+            updateSliderUI();
+            startSliderAutoPlay();
+        }
+
+        // دالة تحديث واجهة السلايدر والنصوص والألوان
+        function updateSliderUI() {
+            const slider = document.getElementById('main-slider');
+            const mainTitle = document.getElementById('slide-main-title');
+            const subTitle = document.getElementById('slide-sub-title');
+            if (!slider || !mainTitle || !subTitle) return;
+
+            const currentSlide = slidesData[currentSlideIndex];
+
+            // إزالة كلاسات الخلفيات القديمة وإضافة الجديدة للـ Slider
+            slider.classList.remove('slide-1', 'slide-2', 'slide-3');
+            slider.classList.add(currentSlide.class);
+
+            // تحديث النصوص
+            mainTitle.innerText = currentSlide.title;
+            subTitle.innerText = currentSlide.sub;
+
+            // تحديث حالة النقاط النشطة (Dots)
+            slidesData.forEach((_, index) => {
+                const dot = document.getElementById(`dot-${index}`);
+                if (dot) {
+                    if (index === currentSlideIndex) {
+                        dot.classList.remove('bg-white/40', 'w-2.5');
+                        dot.classList.add('bg-white', 'w-6'); // جعل النقطة النشطة أعرض ومضيئة أكثر
+                    } else {
+                        dot.classList.remove('bg-white', 'w-6');
+                        dot.classList.add('bg-white/40', 'w-2.5');
+                    }
+                }
+            });
+        }
+
+        // دالة تشغيل التبديل التلقائي
+        function startSliderAutoPlay() {
+            clearInterval(sliderInterval);
+            sliderInterval = setInterval(() => {
+                currentSlideIndex = (currentSlideIndex + 1) % slidesData.length;
+                updateSliderUI();
+            }, 4000); // الانتقال كل 4 ثوانٍ
+        }
+
+        // دالة للانتقال المباشر عند الضغط على نقطة معينة
+        function goToSlide(index) {
+            currentSlideIndex = index;
+            updateSliderUI();
+            startSliderAutoPlay(); // إعادة تشغيل المؤقت لتفادي الانتقال السريع المفاجئ
+        }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('app-sidebar');
@@ -427,7 +693,6 @@
             }
         }
 
-        // تحويل حالة تفعيل حقل اختيار الدورة بناءً على نوع الدراسة اختيار (دورات)
         function toggleCourseSelection() {
             const type = document.getElementById('adm-s-type').value;
             const courseSelect = document.getElementById('adm-s-course');
@@ -454,80 +719,65 @@
             }
         }
 
-        // بناء وعرض الواجهات والمواد ديناميكياً
-        function refreshUI() {
-            const container = document.getElementById('subjects-container');
-            container.innerHTML = db.subjects.map(s => {
-                const st = subStyles[s] || {icon:'📓', class:'bg-slate-400'};
-                const count = db.teachers.filter(t => t.sub === s).length;
-                return `
-                <div onclick="openSubModal('${s}')" class="${st.class} p-5 h-36 rounded-[2.2rem] flex flex-col justify-between shadow-lg relative overflow-hidden active:scale-95 transition-all text-white">
-                    <span class="absolute -top-3 -left-3 text-5xl opacity-20 rotate-12">${st.icon}</span>
-                    <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-xl z-10">${st.icon}</div>
-                    <div class="z-10"><h4 class="font-black text-xs">${s}</h4><p class="text-[8px] font-bold opacity-70">${count} مدرسين</p></div>
-                </div>`;
-            }).join('');
-
-            document.getElementById('stat-teachers').innerText = db.teachers.length;
-            document.getElementById('stat-courses').innerText = db.courses ? db.courses.length : 0;
-            document.getElementById('stat-students').innerText = db.students ? db.students.length : 0;
-            
-            // تحديث الإحصائيات داخل السلايد بار الجانبي
-            document.getElementById('sb-count-math').innerText = db.teachers.filter(t => t.sub === 'الرياضيات').length;
-            document.getElementById('sb-count-chem').innerText = db.teachers.filter(t => t.sub === 'الكيمياء').length;
-            document.getElementById('sb-count-phy').innerText = db.teachers.filter(t => t.sub === 'الفيزياء').length;
-            document.getElementById('sb-count-bio').innerText = db.teachers.filter(t => t.sub === 'الاحياء').length;
-            document.getElementById('sb-count-arabic').innerText = db.teachers.filter(t => t.sub === 'اللغة العربية').length;
-            document.getElementById('sb-count-english').innerText = db.teachers.filter(t => t.sub === 'اللغة الانجليزية').length;
-
-            document.getElementById('adm-t-sub').innerHTML = db.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
-            document.getElementById('adm-c-select-t').innerHTML = db.teachers.map(t => `<option value="${t.id}">${t.name} - ${t.sub}</option>`).join('');
-            
-            const coTeacherSelect = document.getElementById('adm-co-teacher');
-            if (coTeacherSelect) {
-                coTeacherSelect.innerHTML = db.teachers.map(t => `<option value="${t.name}">${t.name} (${t.sub})</option>`).join('') || `<option value="">لا يوجد مدرسين بعد</option>`;
+        function toggleEditCourseSelection() {
+            const type = document.getElementById('edit-s-type').value;
+            const courseSelect = document.getElementById('edit-s-course');
+            if (!courseSelect) return;
+            if (type === 'إلكتروني') {
+                courseSelect.disabled = true;
+                courseSelect.innerHTML = `<option value="كل الدورات الإلكترونية">كل الدورات الإلكترونية</option>`;
+            } else {
+                courseSelect.disabled = false;
+                if(db.courses && db.courses.length > 0) {
+                    courseSelect.innerHTML = db.courses.map(c => `<option value="${c.title}">${c.title} (${c.teacher})</option>`).join('');
+                } else {
+                    courseSelect.innerHTML = `<option value="لا توجد دورات مضافة">لا توجد دورات مضافة</option>`;
+                }
             }
-
-            toggleCourseSelection();
-            refreshCoursesList();
-            refreshAttendanceLogs();
-            refreshStudentsList();
-            localStorage.setItem('MN_EDU_DB', JSON.stringify(db));
         }
 
         function switchAdminTab(target) {
             document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
-            document.getElementById('adm-' + target).classList.remove('hidden');
+            const targetSec = document.getElementById('adm-' + target);
+            if(targetSec) targetSec.classList.remove('hidden');
             document.querySelectorAll('.adm-tab').forEach(b => {
                 b.classList.remove('bg-sky-600', 'text-white', 'shadow-md');
                 b.classList.add('bg-white', 'text-slate-400');
             });
-            event.target.classList.add('bg-sky-600', 'text-white', 'shadow-md');
+            if(event && event.target) {
+                event.target.classList.add('bg-sky-600', 'text-white', 'shadow-md');
+            }
         }
 
         let tempImg = "";
-        document.getElementById('adm-t-file').addEventListener('change', (e) => {
-            const reader = new FileReader();
-            reader.onload = () => { tempImg = reader.result; document.getElementById('img-status').innerText = "✅ تم تحميل الصورة"; };
-            reader.readAsDataURL(e.target.files[0]);
-        });
+        const tFile = document.getElementById('adm-t-file');
+        if(tFile) {
+            tFile.addEventListener('change', (e) => {
+                const reader = new FileReader();
+                reader.onload = () => { tempImg = reader.result; document.getElementById('img-status').innerText = "✅ تم تحميل الصورة"; };
+                reader.readAsDataURL(e.target.files[0]);
+            });
+        }
 
         let tempPdfData = "";
-        document.getElementById('adm-c-pdf').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (file.type !== "application/pdf") {
-                alert("يرجير اختيار ملف بصيغة PDF فقط");
-                e.target.value = "";
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = () => { 
-                tempPdfData = reader.result; 
-                document.getElementById('pdf-status').innerText = "✅ تم تحميل ملف الـ PDF بنجاح"; 
-            };
-            reader.readAsDataURL(file);
-        });
+        const cPdf = document.getElementById('adm-c-pdf');
+        if(cPdf) {
+            cPdf.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                if (file.type !== "application/pdf") {
+                    alert("يرجى اختيار ملف بصيغة PDF فقط");
+                    e.target.value = "";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = () => { 
+                    tempPdfData = reader.result; 
+                    document.getElementById('pdf-status').innerText = "✅ تم تحميل ملف الـ PDF بنجاح"; 
+                };
+                reader.readAsDataURL(file);
+            });
+        }
 
         function actionSaveTeacher() {
             const name = document.getElementById('adm-t-name').value;
@@ -603,7 +853,7 @@
             let hours = parseInt(timeSplit[0]);
             const minutes = timeSplit[1];
             const ampm = hours >= 12 ? 'مساءً' : 'صباحاً';
-            hours = hours % 12;
+            hours = hours >= 12 ? hours - 12 : hours;
             hours = hours ? hours : 12; 
             const formattedTime = `${hours}:${minutes} ${ampm}`;
 
@@ -629,7 +879,6 @@
             alert("تم حفظ وجدولة الدورة بنجاح ونظام التنبيهات يعمل!");
         }
 
-        // دالة توليد كود الدخول العشوائي الذكي للطالب الجديد
         function generateStudentCode() {
             const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
             let code = "";
@@ -647,6 +896,9 @@
             const grade = document.getElementById('adm-s-grade').value;
             const type = document.getElementById('adm-s-type').value;
             const courseName = document.getElementById('adm-s-course').value;
+            
+            const totalPrice = parseFloat(document.getElementById('adm-s-price').value) || 0;
+            const paidPrice = parseFloat(document.getElementById('adm-s-paid').value) || 0;
 
             if(!name || !phone || !parent || !parentPhone) {
                 return alert("يرجى ملء كافة معلومات الطالب وولي أمره لإتمام التسجيل");
@@ -655,281 +907,720 @@
             const studentCode = generateStudentCode();
             const now = new Date();
             const formattedDate = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+            const studentId = Date.now();
 
             if(!db.students) db.students = [];
             db.students.unshift({
-                id: Date.now(),
+                id: studentId,
                 name,
                 phone,
                 parent,
                 parentPhone,
                 grade,
                 type,
-                courseName,
+                courseName: type === 'إلكتروني' ? 'كل الدورات الإلكترونية' : courseName,
                 code: studentCode,
                 date: formattedDate,
-                status: "نشط"
+                status: "نشط",
+                totalPrice: totalPrice, 
+                paidPrice: paidPrice     
             });
 
-            // تفريغ الحقول
+            if (paidPrice > 0) {
+                const recId = 'REC-' + Date.now();
+                db.payments.unshift({
+                    id: recId,
+                    studentId: studentId,
+                    studentName: name,
+                    courseName: type === 'إلكتروني' ? 'إلكتروني عام' : courseName,
+                    amount: paidPrice,
+                    date: formattedDate,
+                    type: "دفع تسجيل أولى"
+                });
+            }
+
             document.getElementById('adm-s-name').value = "";
             document.getElementById('adm-s-phone').value = "";
             document.getElementById('adm-s-parent').value = "";
             document.getElementById('adm-s-parent-phone').value = "";
+            document.getElementById('adm-s-price').value = "";
+            document.getElementById('adm-s-paid').value = "";
 
             refreshUI();
-            alert(`🎉 تم تسجيل الطالب بنجاح!\n🔑 كود الدخول المولد له هو: ${studentCode}`);
+            alert(`🎉 تم تسجيل الطالب بنجاح وتوليد الوصل المالي!\n🔑 كود الدخول المولد له هو: ${studentCode}`);
         }
 
-        // وظيفة طباعة وتوليد بطاقة الـ PDF الذكية للطالب الحالي
+        function openEditStudent(id) {
+            const s = db.students.find(student => student.id == id);
+            if(!s) return;
+
+            document.getElementById('edit-s-id').value = s.id;
+            document.getElementById('edit-s-name').value = s.name;
+            document.getElementById('edit-s-phone').value = s.phone;
+            document.getElementById('edit-s-parent').value = s.parent;
+            document.getElementById('edit-s-parent-phone').value = s.parentPhone;
+            document.getElementById('edit-s-grade').value = s.grade;
+            document.getElementById('edit-s-type').value = s.type;
+            
+            toggleEditCourseSelection();
+            document.getElementById('edit-s-course').value = s.courseName;
+
+            const modal = document.getElementById('edit-student-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('modal-active'), 10);
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-student-modal').style.display = 'none';
+        }
+
+        function actionUpdateStudent() {
+            const id = document.getElementById('edit-s-id').value;
+            const name = document.getElementById('edit-s-name').value;
+            const phone = document.getElementById('edit-s-phone').value;
+            const parent = document.getElementById('edit-s-parent').value;
+            const parentPhone = document.getElementById('edit-s-parent-phone').value;
+            const grade = document.getElementById('edit-s-grade').value;
+            const type = document.getElementById('edit-s-type').value;
+            const courseName = document.getElementById('edit-s-course').value;
+
+            if(!name || !phone || !parent || !parentPhone) {
+                return alert("يرجى ملء جميع الحقول لإتمام التعديل");
+            }
+
+            const index = db.students.findIndex(s => s.id == id);
+            if(index > -1) {
+                db.students[index].name = name;
+                db.students[index].phone = phone;
+                db.students[index].parent = parent;
+                db.students[index].parentPhone = parentPhone;
+                db.students[index].grade = grade;
+                db.students[index].type = type;
+                db.students[index].courseName = courseName;
+
+                closeEditModal();
+                refreshUI();
+                alert("✅ تم تحديث بيانات الطالب بنجاح");
+            }
+        }
+
+        function actionDeleteStudent(id) {
+            if(confirm("هل أنت متأكد من حذف هذا الطالب نهائياً من المنصة؟")) {
+                db.students = db.students.filter(s => s.id != id);
+                db.payments = db.payments.filter(p => p.studentId != id); 
+                refreshUI();
+                alert("🗑 تم حذف الطالب بنجاح");
+            }
+        }
+
+        function openPaymentModal(id) {
+            const s = db.students.find(student => student.id == id);
+            if(!s) return;
+            document.getElementById('pay-s-id').value = s.id;
+            document.getElementById('pay-info-name').innerText = s.name;
+            document.getElementById('pay-info-total').innerText = (s.totalPrice || 0).toLocaleString();
+            document.getElementById('pay-info-paid').innerText = (s.paidPrice || 0).toLocaleString();
+            document.getElementById('pay-info-debt').innerText = ((s.totalPrice || 0) - (s.paidPrice || 0)).toLocaleString();
+            document.getElementById('pay-amount-input').value = "";
+
+            const modal = document.getElementById('pay-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('modal-active'), 10);
+        }
+
+        function closePayModal() {
+            document.getElementById('pay-modal').style.display = 'none';
+        }
+
+        function actionSubmitNewPayment() {
+            const id = document.getElementById('pay-s-id').value;
+            const amount = parseFloat(document.getElementById('pay-amount-input').value) || 0;
+            if (amount <= 0) return alert("يرجى إدخال مبلغ صحيح ومقبول.");
+
+            const index = db.students.findIndex(s => s.id == id);
+            if(index > -1) {
+                const s = db.students[index];
+                const currentDebt = (s.totalPrice || 0) - (s.paidPrice || 0);
+                if (amount > currentDebt) {
+                    return alert("عذراً! المبلغ المدفوع أكبر من المتبقي بذمة الطالب.");
+                }
+
+                db.students[index].paidPrice = (s.paidPrice || 0) + amount;
+
+                const now = new Date();
+                const formattedDate = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+                
+                db.payments.unshift({
+                    id: 'REC-' + Date.now(),
+                    studentId: s.id,
+                    studentName: s.name,
+                    courseName: s.type === 'إلكتروني' ? 'إلكتروني عام' : s.courseName,
+                    amount: amount,
+                    date: formattedDate,
+                    type: "تسديد دفعة قسط مالي"
+                });
+
+                closePayModal();
+                refreshUI();
+                alert(`💸 تم استلام وقبض ${amount.toLocaleString()} د.ع وتوليد وصل الاستلام المالي بنجاح!`);
+            }
+        }
+
+        function actionSubmitExpense() {
+            const title = document.getElementById('adm-expense-title').value;
+            const amount = parseFloat(document.getElementById('adm-expense-amount').value) || 0;
+
+            if(!title || amount <= 0) {
+                return alert("يرجى إدخال عنوان المصروف وتحديد المبلغ بالدنانير");
+            }
+
+            const now = new Date();
+            const formattedDate = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+
+            if(!db.expenses) db.expenses = [];
+            db.expenses.unshift({
+                id: 'EXP-' + Date.now(),
+                title: title,
+                amount: amount,
+                date: formattedDate
+            });
+
+            document.getElementById('adm-expense-title').value = "";
+            document.getElementById('adm-expense-amount').value = "";
+
+            refreshUI();
+            alert("✅ تم قيد وحفظ المصروف العام بنجاح!");
+        }
+
+        function updateTeacherFinCourses() {
+            const tId = document.getElementById('adm-f-teacher-select').value;
+            const courseSelect = document.getElementById('adm-f-course-select');
+            if(!courseSelect) return;
+            const teacher = db.teachers.find(t => t.id == tId);
+            if(!teacher) {
+                courseSelect.innerHTML = `<option value="">اختر المدرس أولاً</option>`;
+                return;
+            }
+            const teacherCourses = db.courses.filter(c => c.teacher === teacher.name);
+            if(teacherCourses.length > 0) {
+                courseSelect.innerHTML = teacherCourses.map(c => `<option value="${c.title}">${c.title}</option>`).join('');
+            } else {
+                courseSelect.innerHTML = `<option value="إلكتروني عام">الدورات الإلكترونية العامة فقط</option>`;
+            }
+        }
+
+        function actionSubmitTeacherPayment() {
+            const tId = document.getElementById('adm-f-teacher-select').value;
+            const course = document.getElementById('adm-f-course-select').value;
+            const amount = parseFloat(document.getElementById('adm-f-teacher-amount').value) || 0;
+
+            if(!tId || !course || amount <= 0) {
+                return alert("يرجى اختيار المدرس والدورة وتحديد ميزانية الصرف الصحيحة");
+            }
+
+            const teacher = db.teachers.find(t => t.id == tId);
+            if(!teacher) return alert("المدرس غير موجود");
+
+            const now = new Date();
+            const formattedDate = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+
+            if(!db.teacherPayments) db.teacherPayments = [];
+            db.teacherPayments.unshift({
+                id: 'TREC-' + Date.now(),
+                teacherName: teacher.name,
+                courseName: course,
+                amount: amount,
+                date: formattedDate
+            });
+
+            document.getElementById('adm-f-teacher-amount').value = "";
+            refreshUI();
+            alert(`🖨️ تم صرف قسط الأستاذ بقيمة ${amount.toLocaleString()} د.ع وتوليد قيد الاستحقاق.`);
+        }
+
         function printStudentCard(id) {
             const s = db.students.find(student => student.id == id);
             if(!s) return;
 
             const printArea = document.getElementById('print-card-area');
             printArea.innerHTML = `
-                <div style="direction: rtl; font-family: 'Cairo', sans-serif; max-width: 400px; margin: 20px auto; border: 3px solid #0ea5e9; padding: 25px; border-radius: 2rem; background: #ffffff; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); position: relative;">
-                    <div style="text-align: center; margin-bottom: 20px; border-b: 2px dashed #e2e8f0; padding-bottom: 15px;">
-                        <h2 style="font-size: 22px; font-weight: 900; color: #0ea5e9; margin: 0;">منصتي التعليمية الذكية</h2>
-                        <p style="font-size: 11px; color: #64748b; font-weight: bold; margin: 5px 0 0 0;">بطاقة الدخول الرسمية للطالب</p>
+                <div style="direction: rtl; font-family: 'Cairo', sans-serif; text-align: center; border: 4px solid #0284c7; padding: 25px; border-radius: 25px; width: 85mm; margin: auto; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); background: white; position: relative;">
+                    <div style="background: #0284c7; color: white; padding: 10px; border-radius: 15px; font-weight: 900; font-size: 16px; margin-bottom: 15px;">منصتي التعليمية الذكية</div>
+                    <h3 style="font-size: 15px; font-weight: 900; color: #1e293b; margin: 8px 0;">اسم الطالب: ${s.name}</h3>
+                    <p style="font-size: 12px; font-weight: bold; color: #64748b; margin: 4px 0;">الصف: ${s.grade}</p>
+                    <p style="font-size: 12px; font-weight: bold; color: #0284c7; margin: 4px 0;">كود الدخول الثابت: ${s.code}</p>
+                    <p style="font-size: 11px; font-weight: bold; color: #64748b; margin: 4px 0;">نوع الاشتراك: ${s.type} (${s.courseName})</p>
+                    <div id="print-qrcode-container" style="display: flex; justify-content: center; margin: 15px 0;"></div>
+                    <p style="font-size: 9px; color: #94a3b8; font-weight: bold; margin-top: 10px;">يرجى إبراز الهوية دائماً للدخول وإكمال الحضور التلقائي للمنصة</p>
+                </div>
+            `;
+
+            new QRCode(document.getElementById("print-qrcode-container"), {
+                text: s.code,
+                width: 110,
+                height: 110,
+                colorDark : "#0284c7",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => { window.print(); }, 400);
+        }
+
+        function printPaymentReceipt(id) {
+            const p = db.payments.find(pay => pay.id === id);
+            if(!p) return alert("الوصل المالي غير موجود!");
+
+            const printArea = document.getElementById('print-card-area');
+            printArea.innerHTML = `
+                <div style="direction: rtl; font-family: 'Cairo', sans-serif; border: 2px dashed #000; padding: 20mm; width: 210mm; background: white; box-sizing: border-box;">
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <h1 style="font-size: 26px; font-weight: 900; margin: 0 0 5px 0;">منصتي التعليمية - وصل قبض مالي للطلاب</h1>
+                        <p style="font-size: 14px; color: #555; margin: 0;">منظومة الحسابات والتقارير الفورية المدمجة للمنصة</p>
                     </div>
-                    <div style="margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 1.5rem; border: 1px solid #edf2f7;">
-                        <p style="font-size: 14px; margin: 6px 0; color: #1e293b;">👤 <b>اسم الطالب:</b> ${s.name}</p>
-                        <p style="font-size: 13px; margin: 6px 0; color: #1e293b;">🏫 <b>المرحلة الدراسية:</b> ${s.grade}</p>
-                        <p style="font-size: 13px; margin: 6px 0; color: #1e293b;">🎯 <b>نوع النظام:</b> [${s.type}] - ${s.courseName}</p>
-                        <p style="font-size: 13px; margin: 6px 0; color: #1e293b;">📅 <b>تاريخ التسجيل:</b> ${s.date}</p>
+                    <hr style="border: 1px dashed #000; margin-bottom: 25px;">
+                    <div style="font-size: 16px; line-height: 2; margin-bottom: 35px;">
+                        <p><b>رقم الوصل المرجعي للفاتورة:</b> ${p.id}</p>
+                        <p><b>تاريخ الحركة الماليّة والمستند:</b> ${p.date}</p>
+                        <p><b>نوع المقبوضات:</b> <span style="background: #eee; padding: 2px 8px; border-radius: 5px;">${p.type}</span></p>
+                        <p><b>استلمنا من الطالب الثلاثي:</b> ${p.studentName}</p>
+                        <p><b>الدورة / المسار التعليمي المسجل:</b> ${p.courseName}</p>
+                        <p><b>مبلغ الدفعة المستلمة نقداً:</b> <span style="font-size: 20px; font-weight: 900; text-decoration: underline;">${p.amount.toLocaleString()} دينار عراقي لا غير</span></p>
                     </div>
-                    <div style="text-align: center; background: linear-gradient(135deg, #0ea5e9, #2563eb); padding: 15px; border-radius: 1.5rem; color: #ffffff; box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.2);">
-                        <p style="font-size: 11px; margin: 0 0 5px 0; font-weight: bold; opacity: 0.9;">🔑 كود الدخول الخاص بك (سري)</p>
-                        <p style="font-size: 26px; font-weight: 900; margin: 0; letter-spacing: 2px;">${s.code}</p>
-                    </div>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <p style="font-size: 10px; color: #94a3b8; font-weight: bold; margin: 0;">يرجى الاحتفاظ بالبطاقة لاستخدامها عند تسجيل الدخول للمنصة</p>
+                    <div style="margin-top: 60px; display: flex; justify-content: space-between; font-size: 15px; font-weight: bold;">
+                        <div style="text-align: center; width: 45%;">توقيع الحسابات واستلام الصندوق:<br><br>_____________________</div>
+                        <div style="text-align: center; width: 45%;">توقيع الطالب أو ولي أمره:<br><br>_____________________</div>
                     </div>
                 </div>
             `;
 
-            window.print();
+            setTimeout(() => { window.print(); }, 400);
         }
 
-        // وظيفة مشاركة بيانات بطاقة الطالب عبر الواتساب بنص منسق
-        function shareStudentWhatsApp(id) {
-            const s = db.students.find(student => student.id == id);
-            if(!s) return;
+        function refreshFinancialsView() {
+            const monthFilter = document.getElementById('fin-filter-month').value;
+            const yearFilter = document.getElementById('fin-filter-year').value;
 
-            const message = `✨ *بطاقة دخول الطالب الرسمية* ✨%0A%0A` +
-                            `👤 *اسم الطالب:* ${s.name}%0A` +
-                            `🏫 *المرحلة الدراسية:* ${s.grade}%0A` +
-                            `🎯 *نوع الاشتراك:* [${s.type}] ${s.courseName}%0A` +
-                            `📅 *تاريخ التسجيل:* ${s.date}%0A%0A` +
-                            `🔑 *كود الدخول المخصص لك:*%0A` +
-                            `*${s.code}*%0A%0A` +
-                            `ℹ️ _يرجى استخدام الكود أعلاه للوصول إلى محاضراتك وفصولك التعليمية بنجاح._`;
+            let totalIn = 0;
+            let totalExpenses = 0;
+            let totalTeacherPaid = 0;
 
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=${s.phone}&text=${message}`;
-            window.open(whatsappUrl, '_blank');
+            const filteredPayments = db.payments.filter(p => {
+                const matchMonth = monthFilter === "كل الأشهر" || p.date.includes(monthFilter);
+                const matchYear = yearFilter === "كل السنين" || p.date.startsWith(yearFilter);
+                return matchMonth && matchYear;
+            });
+            filteredPayments.forEach(p => totalIn += p.amount);
+
+            const filteredExpenses = (db.expenses || []).filter(e => {
+                const matchMonth = monthFilter === "كل الأشهر" || e.date.includes(monthFilter);
+                const matchYear = yearFilter === "كل السنين" || e.date.startsWith(yearFilter);
+                return matchMonth && matchYear;
+            });
+            filteredExpenses.forEach(e => totalExpenses += e.amount);
+
+            const filteredTeacherPayments = (db.teacherPayments || []).filter(tp => {
+                const matchMonth = monthFilter === "كل الأشهر" || tp.date.includes(monthFilter);
+                const matchYear = yearFilter === "كل السنين" || tp.date.startsWith(yearFilter);
+                return matchMonth && matchYear;
+            });
+            filteredTeacherPayments.forEach(tp => totalTeacherPaid += tp.amount);
+
+            let totalDebt = 0;
+            db.students.forEach(s => {
+                totalDebt += ((s.totalPrice || 0) - (s.paidPrice || 0));
+            });
+
+            document.getElementById('fin-total-in').innerText = totalIn.toLocaleString() + " د.ع";
+            document.getElementById('fin-total-debt').innerText = totalDebt.toLocaleString() + " د.ع";
+            document.getElementById('fin-total-expenses').innerText = totalExpenses.toLocaleString() + " د.ع";
+            document.getElementById('fin-total-teacher-paid').innerText = totalTeacherPaid.toLocaleString() + " د.ع";
+
+            const netProfit = totalIn - totalExpenses - totalTeacherPaid;
+            document.getElementById('fin-net-profit').innerText = netProfit.toLocaleString() + " دينار عراقي";
+
+            const recList = document.getElementById('fin-receipts-list');
+            if (recList) {
+                if (filteredPayments.length > 0) {
+                    recList.innerHTML = filteredPayments.map(p => `
+                        <div class="flex items-center justify-between p-2 bg-slate-50 border border-slate-100 rounded-xl">
+                            <div>
+                                <h5 class="font-black text-slate-800 text-[10px]">${p.studentName}</h5>
+                                <p class="text-[8px] text-slate-400">${p.date} • ${p.courseName}</p>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-emerald-600 font-black text-[10px]">+${p.amount.toLocaleString()} د.ع</span>
+                                <button onclick="printPaymentReceipt('${p.id}')" class="bg-sky-50 text-sky-600 text-[8px] px-2 py-1 rounded-md font-bold hover:bg-sky-100">🖨️ طباعة</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    recList.innerHTML = `<p class="text-slate-400 italic text-center py-2">لا توجد وصولات مطابقة للفلتر</p>`;
+                }
+            }
+
+            const expList = document.getElementById('fin-expenses-list');
+            if (expList) {
+                if(filteredExpenses.length > 0) {
+                    expList.innerHTML = filteredExpenses.map(e => `
+                        <div class="flex items-center justify-between p-2 bg-amber-50/40 border border-amber-100 rounded-xl">
+                            <div>
+                                <h5 class="font-black text-slate-800 text-[10px]">${e.title}</h5>
+                                <p class="text-[8px] text-slate-400">${e.date}</p>
+                            </div>
+                            <span class="text-amber-700 font-black text-[10px]">-${e.amount.toLocaleString()} د.ع</span>
+                        </div>
+                    `).join('');
+                } else {
+                    expList.innerHTML = `<p class="text-slate-400 italic text-center py-2">لا توجد مصاريف مطابقة للفلتر</p>`;
+                }
+            }
+
+            const tRecList = document.getElementById('fin-teacher-receipts-list');
+            if(tRecList) {
+                if(filteredTeacherPayments.length > 0) {
+                    tRecList.innerHTML = filteredTeacherPayments.map(tp => `
+                        <div class="flex items-center justify-between p-2 bg-purple-50/40 border border-purple-100 rounded-xl">
+                            <div>
+                                <h5 class="font-black text-slate-800 text-[10px]">${tp.teacherName}</h5>
+                                <p class="text-[8px] text-slate-400">${tp.date} • ${tp.courseName}</p>
+                            </div>
+                            <span class="text-purple-700 font-black text-[10px]">-${tp.amount.toLocaleString()} د.ع</span>
+                        </div>
+                    `).join('');
+                } else {
+                    tRecList.innerHTML = `<p class="text-slate-400 italic text-center py-2">لا توجد وصولات مدرسين مطابقة</p>`;
+                }
+            }
+
+            const finTeachersList = document.getElementById('fin-teachers-list');
+            if (finTeachersList) {
+                if (db.teachers.length > 0) {
+                    finTeachersList.innerHTML = db.teachers.map(t => {
+                        let totalSubStudents = 0;
+                        let totalSubRevenue = 0;
+                        let courseShareDetails = "";
+
+                        const teacherCourses = db.courses.filter(c => c.teacher === t.name);
+                        
+                        if(teacherCourses.length > 0) {
+                            courseShareDetails = teacherCourses.map(c => {
+                                const studentsInCourse = db.students.filter(s => s.type === 'دورات' && s.courseName === c.title);
+                                let courseInflow = 0;
+                                studentsInCourse.forEach(s => {
+                                    const studentPayments = db.payments.filter(p => p.studentId === s.id);
+                                    studentPayments.forEach(p => courseInflow += p.amount);
+                                });
+                                
+                                totalSubStudents += studentsInCourse.length;
+                                totalSubRevenue += courseInflow;
+
+                                return `<div class="text-[9px] text-slate-500 mt-1 mr-2">• ${c.title}: ${studentsInCourse.length} طلاب (المقبوض: ${courseInflow.toLocaleString()} د.ع)</div>`;
+                            }).join('');
+                        } else {
+                            const electStudents = db.students.filter(s => s.type === 'إلكتروني' && s.grade && t.gradeData && t.gradeData[s.grade]);
+                            electStudents.forEach(s => {
+                                const studentPayments = db.payments.filter(p => p.studentId === s.id);
+                                studentPayments.forEach(p => totalSubRevenue += p.amount);
+                            });
+                            totalSubStudents = electStudents.length;
+                            courseShareDetails = `<div class="text-[9px] text-slate-500 mt-1 mr-2">• المسار الإلكتروني العام لصفه: ${electStudents.length} طلاب</div>`;
+                        }
+
+                        let totalSpentToHim = 0;
+                        const teacherReceipts = db.teacherPayments.filter(tp => tp.teacherName === t.name);
+                        teacherReceipts.forEach(tp => totalSpentToHim += tp.amount);
+
+                        return `
+                            <div class="p-3 bg-white border border-slate-100 rounded-2xl shadow-sm space-y-1">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-black text-slate-800 text-[11px]">${t.name} (${t.sub})</span>
+                                    <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-[9px] font-black">إجمالي الطلاب: ${totalSubStudents}</span>
+                                </div>
+                                ${courseShareDetails}
+                                <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-dashed border-slate-100 text-[10px]">
+                                    <p class="text-emerald-600 font-bold">📥 دخل اشتراكاته: <b>${totalSubRevenue.toLocaleString()} د.ع</b></p>
+                                    <p class="text-purple-600 font-bold">💸 المصروف له: <b>${totalSpentToHim.toLocaleString()} د.ع</b></p>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    finTeachersList.innerHTML = `<p class="text-slate-400 italic text-center py-2">لا يوجد مدرسين مسجلين لاحتساب نسبهم.</p>`;
+                }
+            }
         }
 
         function refreshStudentsList() {
-            const container = document.getElementById('students-list');
-            if(!container) return;
-            if(!db.students || db.students.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-slate-400 font-bold py-6">لا يوجد طلاب مسجلين حالياً.</p>`;
-                return;
-            }
+            const listContainer = document.getElementById('students-list');
+            if(!listContainer) return;
 
-            // جلب قيمة البحث من حقل الإدخال الجديد
-            const searchInput = document.getElementById('student-search-input');
-            const query = searchInput ? searchInput.value.trim().toLowerCase() : "";
+            const searchQuery = document.getElementById('student-search-input').value.trim().toLowerCase();
 
-            // فلترة الطلاب بناءً على الاسم المكتوب
-            const filteredStudents = db.students.filter(s => s.name.toLowerCase().includes(query));
+            const filteredStudents = db.students.filter(s => {
+                return s.name.toLowerCase().includes(searchQuery) || s.code.toLowerCase().includes(searchQuery);
+            });
 
-            if (filteredStudents.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-slate-400 font-bold py-6">لا توجد نتائج تطابق هذا الاسم.</p>`;
-                return;
-            }
+            if(filteredStudents.length > 0) {
+                listContainer.innerHTML = filteredStudents.map(s => {
+                    const remainingDebt = (s.totalPrice || 0) - (s.paidPrice || 0);
+                    return `
+                        <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl relative shadow-xs space-y-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-black text-xs text-slate-800">${s.name}</h4>
+                                    <p class="text-[9px] text-slate-400 font-bold">${s.grade} • <span class="text-sky-600">${s.type} (${s.courseName})</span></p>
+                                    <p class="text-[9px] font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md inline-block mt-1">🔑 كود: ${s.code}</p>
+                                </div>
+                                <span class="bg-green-100 text-green-600 font-black text-[8px] px-2 py-0.5 rounded-full">${s.status}</span>
+                            </div>
+                            
+                            <!-- حقل الفواتير المصغر في كارد الطالب -->
+                            <div class="grid grid-cols-3 gap-1 bg-white p-2 rounded-xl text-[9px] border border-slate-100 text-center font-bold">
+                                <div><p class="text-slate-400">الحساب الكلي</p><p class="text-slate-700">${(s.totalPrice || 0).toLocaleString()}</p></div>
+                                <div><p class="text-slate-400">المدفوع</p><p class="text-emerald-600">${(s.paidPrice || 0).toLocaleString()}</p></div>
+                                <div><p class="text-slate-400">المتبقي</p><p class="text-rose-600">${remainingDebt.toLocaleString()}</p></div>
+                            </div>
 
-            container.innerHTML = filteredStudents.map(s => `
-                <div class="flex flex-col gap-2 p-4 bg-slate-50 rounded-2xl border border-slate-100 shadow-xs relative overflow-hidden">
-                    <span class="absolute top-3 left-3 text-[9px] bg-green-100 text-green-600 px-2 py-0.5 rounded-full font-black">${s.status}</span>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-sky-100 text-sky-600 flex items-center justify-center font-black text-sm">${s.name.charAt(0)}</div>
-                        <div>
-                            <p class="text-xs font-black text-slate-800">${s.name}</p>
-                            <p class="text-[9px] text-slate-400">تاريخ التسجيل: ${s.date} | ${s.grade}</p>
+                            <div class="flex gap-1.5 pt-1">
+                                <button onclick="printStudentCard(${s.id})" class="bg-sky-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg shadow-sm">📇 بطاقة الذكية</button>
+                                <button onclick="openPaymentModal(${s.id})" class="bg-emerald-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg shadow-sm">💵 قبض قسط</button>
+                                <button onclick="openEditStudent(${s.id})" class="bg-amber-500 text-white text-[9px] font-black px-2.5 py-1.5 rounded-lg shadow-sm">✏️ تعديل</button>
+                                <button onclick="actionDeleteStudent(${s.id})" class="bg-rose-50 text-rose-600 text-[9px] font-black px-2 py-1.5 rounded-lg hover:bg-rose-100">🗑</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-[10px] text-slate-600 space-y-1 bg-white p-2.5 rounded-xl border border-slate-100 mt-1">
-                        <p>📱 <b>هاتف الطالب:</b> ${s.phone}</p>
-                        <p>👨‍👩‍👦 <b>ولي الأمر:</b> ${s.parent} (${s.parentPhone})</p>
-                        <p>🎯 <b>نوع النظام / الدورة:</b> <span class="text-indigo-600 font-bold">[${s.type}]</span> ${s.courseName}</p>
-                        <p class="pt-1 mt-1 border-t border-dashed border-slate-100 flex justify-between items-center">
-                            <span>🔑 كود الدخول: <b class="text-sky-600 text-xs font-black select-all">${s.code}</b></span>
-                            <button onclick="navigator.clipboard.writeText('${s.code}'); alert('تم نسخ كود الدخول')" class="text-[8px] bg-sky-50 text-sky-600 px-2 py-1 rounded-md font-bold">نسخ الكود</button>
-                        </p>
-                    </div>
-                    <!-- حزمة أزرار تصدير وطباعة بطاقة الطالب المضافة حديثاً -->
-                    <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100">
-                        <button onclick="printStudentCard(${s.id})" class="bg-sky-600 text-white text-[10px] py-2 px-3 rounded-xl font-black shadow-sm active:scale-95 transition-all text-center flex items-center justify-center gap-1">
-                            📥 حفظ PDF / طباعة البطاقة
-                        </button>
-                        <button onclick="shareStudentWhatsApp(${s.id})" class="bg-emerald-600 text-white text-[10px] py-2 px-3 rounded-xl font-black shadow-sm active:scale-95 transition-all text-center flex items-center justify-center gap-1">
-                            📱 إرسال عبر الواتساب
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function refreshCoursesList() {
-            const container = document.getElementById('courses-list-container');
-            if(!container) return;
-            if(!db.courses || db.courses.length === 0) {
-                container.innerHTML = `<p class="text-center text-xs text-slate-400 font-bold py-10">لا توجد دورات مضافة حالياً.</p>`;
-                return;
+                    `;
+                }).join('');
+            } else {
+                listContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-4">لا يوجد طلاب مسجلين يطابقون البحث حالياً.</p>`;
             }
-            container.innerHTML = db.courses.map(c => `
-                <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm space-y-3">
-                    <div class="flex justify-between items-start">
-                        <h4 class="font-black text-sm text-slate-800">📚 دورتي: ${c.title}</h4>
-                        <span class="bg-sky-50 text-sky-600 font-bold text-[9px] px-2 py-0.5 rounded-full">👥 ${c.studentCount} طالب</span>
-                    </div>
-                    <div class="text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-100/60">
-                        <p>👨‍🏫 <b>الأستاذ:</b> ${c.teacher}</p>
-                        <p>⏱️ <b>وقت بدء المحاضرة:</b> ${c.time}</p>
-                        <p>⏳ <b>مدة المحاضرة:</b> ${c.duration} ساعة</p>
-                        <p>📅 <b>الأيام المحددة:</b> ${c.days}</p>
-                        <p>🚨 <b>التنبيه قبل 24 ساعة:</b> <span class="${c.alertStatus.includes('مفعل') ? 'text-amber-600 font-black' : 'text-slate-400'}">${c.alertStatus}</span></p>
-                    </div>
-                    <button onclick="sendAttendanceLog('${c.title}', '${c.teacher}')" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-black shadow-md transition-all">
-                        ✔ تسجيل حضور فوري للادارة
-                    </button>
-                </div>
-            `).join('');
         }
 
-        function sendAttendanceLog(courseTitle, teacherName) {
-            const now = new Date();
-            const daysOfWeek = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-            const timestamp = `${daysOfWeek[now.getDay()]} - الساعة ${now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`;
-            const studentName = db.students[0] ? db.students[0].name : "كرار حيدر";
+        function refreshUI() {
+            localStorage.setItem('MN_EDU_DB', JSON.stringify(db));
 
-            if(!db.attendanceLogs) db.attendanceLogs = [];
-            db.attendanceLogs.unshift({ student: studentName, course: courseTitle, teacher: teacherName, time: timestamp });
-
-            document.getElementById('notif-badge').classList.remove('hidden');
-            refreshUI();
-            alert(`✅ تم إرسال تبليغ حضورك للإدارة بنجاح!`);
-        }
-
-        function refreshAttendanceLogs() {
-            const container = document.getElementById('admin-attendance-logs');
-            if(!container) return;
-            if(!db.attendanceLogs || db.attendanceLogs.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 italic text-center py-2">لا توجد تبليغات حضور بعد</p>`;
-                return;
-            }
-            container.innerHTML = db.attendanceLogs.map(log => `
-                <div class="p-2.5 bg-emerald-50 border border-emerald-100 rounded-xl text-slate-700">
-                    <p class="font-black text-xs text-emerald-700">👤 الطالب: ${log.student} (حاضر)</p>
-                    <p class="text-[10px] mt-0.5">📖 دورة: <b>${log.course}</b> | الأستاذ: ${log.teacher}</p>
-                    <p class="text-[9px] text-slate-400 text-left font-bold mt-1">🕒 تم التبليغ في: ${log.time}</p>
-                </div>
-            `).join('');
-        }
-
-        function showSection(id) {
-            document.getElementById('home-view').classList.toggle('hidden', id !== 'home');
-            document.getElementById('courses-view').classList.toggle('hidden', id !== 'courses');
-            document.getElementById('admin-view').classList.toggle('hidden', id !== 'admin');
+            // تحديث إحصائيات لوحة التحكم الأساسية في الصفحة الرئيسية
+            const subCounts = { 'الرياضيات': 0, 'الكيمياء': 0, 'الفيزياء': 0, 'الاحياء': 0, 'اللغة العربية': 0, 'اللغة الانجليزية': 0 };
+            db.teachers.forEach(t => { if(subCounts[t.sub] !== undefined) subCounts[t.sub]++; });
             
-            const nh = document.getElementById('nav-home');
-            const nc = document.getElementById('nav-courses');
-            const na = document.getElementById('nav-admin');
-            
-            if(nh) nh.classList.toggle('text-sky-600', id === 'home');
-            if(nc) nc.classList.toggle('text-sky-600', id === 'courses');
-            if(na) na.classList.toggle('text-sky-600', id === 'admin');
+            document.getElementById('sb-count-math').innerText = subCounts['الرياضيات'];
+            document.getElementById('sb-count-chem').innerText = subCounts['الكيمياء'];
+            document.getElementById('sb-count-phy').innerText = subCounts['الفيزياء'];
+            document.getElementById('sb-count-bio').innerText = subCounts['الاحياء'];
+            document.getElementById('sb-count-arabic').innerText = subCounts['اللغة العربية'];
+            document.getElementById('sb-count-english').innerText = subCounts['اللغة الانجليزية'];
 
-            if (id === 'admin') {
-                const badge = document.getElementById('notif-badge');
-                if(badge) badge.classList.add('hidden');
+            document.getElementById('stat-teachers').innerText = db.teachers.length;
+            document.getElementById('stat-students').innerText = db.students.length;
+            document.getElementById('stat-courses').innerText = (db.courses || []).length;
+
+            const subContainer = document.getElementById('subjects-container');
+            if(subContainer) {
+                subContainer.innerHTML = db.subjects.map(sub => {
+                    const style = subStyles[sub] || {icon:'📚', class:'bg-slate-500'};
+                    const count = db.teachers.filter(t => t.sub === sub).length;
+                    return `
+                        <div onclick="openSubjectModal('${sub}')" class="${style.class} p-5 rounded-[2rem] text-white cursor-pointer active:scale-95 transition-all relative overflow-hidden shadow-lg h-32 flex flex-col justify-between">
+                            <span class="text-3xl">${style.icon}</span>
+                            <div>
+                                <h4 class="font-black text-sm">${sub}</h4>
+                                <p class="text-[9px] opacity-80 font-bold">${count} مدرسين مسجلين</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             }
+
+            const courseViewContainer = document.getElementById('courses-list-container');
+            if(courseViewContainer) {
+                if(db.courses && db.courses.length > 0) {
+                    courseViewContainer.innerHTML = db.courses.map(c => `
+                        <div class="bg-white border border-slate-100 p-5 rounded-[2rem] shadow-sm space-y-3 relative overflow-hidden">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="bg-amber-100 text-amber-700 text-[8px] px-2 py-0.5 rounded-full font-black mb-1 inline-block">تنبيه ذكي: ${c.alertStatus}</span>
+                                    <h3 class="font-black text-sm text-slate-800">${c.title}</h3>
+                                    <p class="text-[10px] text-slate-400 font-bold">الأستاذ: <span class="text-slate-700">${c.teacher}</span></p>
+                                </div>
+                                <span class="bg-sky-50 text-sky-600 font-black text-[10px] p-2.5 rounded-2xl">⏰ ${c.time}</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-slate-50 text-[10px] text-slate-500 font-bold">
+                                <p>📅 الأيام: <span class="text-slate-800">${c.days}</span></p>
+                                <p>⏳ المدة: <span class="text-slate-800">${c.duration} ساعة</span></p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    courseViewContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-8">لا توجد دورات مضافة حالياً في جدول المنصة.</p>`;
+                }
+            }
+
+            const tSelect1 = document.getElementById('adm-c-select-t');
+            const tSelect2 = document.getElementById('adm-co-teacher');
+            const tSelect3 = document.getElementById('adm-f-teacher-select');
+            
+            if(tSelect1) tSelect1.innerHTML = db.teachers.map(t => `<option value="${t.id}">${t.name} (${t.sub})</option>`).join('');
+            if(tSelect2) tSelect2.innerHTML = db.teachers.map(t => `<option value="${t.name}">${t.name} (${t.sub})</option>`).join('');
+            if(tSelect3) tSelect3.innerHTML = db.teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+
+            const tSubSelect = document.getElementById('adm-t-sub');
+            if(tSubSelect) tSubSelect.innerHTML = db.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+
+            const logsContainer = document.getElementById('admin-attendance-logs');
+            if(logsContainer) {
+                if(db.attendanceLogs && db.attendanceLogs.length > 0) {
+                    logsContainer.innerHTML = db.attendanceLogs.map(log => `
+                        <div class="p-2 bg-rose-50/50 border border-rose-100 rounded-xl text-rose-700 flex justify-between items-center">
+                            <span>📲 تم إرسال إشعار حضور لولي أمر الطالب (<b>${log.studentName}</b>)</span>
+                            <span class="text-[9px] font-bold opacity-70">${log.time}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    logsContainer.innerHTML = `<p class="text-slate-400 italic text-center py-2">لا توجد تبليغات حضور بعد</p>`;
+                }
+            }
+
+            populateStudentCourseDropdown();
+            updateTeacherFinCourses();
+            refreshStudentsList();
+            refreshFinancialsView();
         }
 
-        function openSubModal(sub) {
+        function openSubjectModal(sub) {
             const modal = document.getElementById('sub-modal');
+            document.getElementById('modal-title').innerText = `مدرسين مادة ${sub}`;
+            const teachers = db.teachers.filter(t => t.sub === sub);
             const body = document.getElementById('modal-body');
-            document.getElementById('modal-title').innerText = sub;
-            const list = db.teachers.filter(t => t.sub === sub);
-            body.innerHTML = list.length ? list.map(t => `
-                <div onclick="openTeacherProfile(${t.id})" class="bg-slate-50 p-4 rounded-2xl flex items-center gap-4 border border-slate-100 active:scale-95 transition-all">
-                    <img src="${t.img}" class="w-12 h-12 rounded-xl object-cover border-2 border-white shadow-sm">
-                    <div class="flex-1 text-sm font-black text-slate-800">${t.name}</div>
-                    <div class="text-sky-600">➜</div>
-                </div>
-            `).join('') : '<p class="text-center text-[10px] text-slate-400 font-bold">لا يوجد مدرسين بعد</p>';
+            
+            if(teachers.length > 0) {
+                body.innerHTML = teachers.map(t => `
+                    <div onclick="openTeacherProfile(${t.id})" class="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-100 transition-all">
+                        <div class="flex items-center gap-3">
+                            <img src="${t.img}" class="w-12 h-12 rounded-xl object-cover bg-white border">
+                            <div>
+                                <h4 class="font-black text-xs text-slate-800">${t.name}</h4>
+                                <p class="text-[9px] text-slate-400 font-bold">اضغط لاستعراض فصول المحاضرات والملامز</p>
+                            </div>
+                        </div>
+                        <span class="text-xs">◀</span>
+                    </div>
+                `).join('');
+            } else {
+                body.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-4">لا يوجد مدرسين مضافين لهذه المادة بعد.</p>`;
+            }
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('modal-active'), 10);
         }
 
+        function closeModal() {
+            document.getElementById('sub-modal').style.display = 'none';
+        }
+
         function openTeacherProfile(id) {
-            const t = db.teachers.find(t => t.id == id);
+            closeModal();
+            const t = db.teachers.find(teacher => teacher.id == id);
+            if(!t) return;
+
+            document.getElementById('tp-avatar').src = t.img;
             document.getElementById('tp-name').innerText = t.name;
             document.getElementById('tp-sub').innerText = t.sub;
-            document.getElementById('tp-avatar').src = t.img;
-            
-            const cont = document.getElementById('content-chapters');
-            cont.innerHTML = "";
 
-            if (!t.gradeData || Object.keys(t.gradeData).length === 0) {
-                cont.innerHTML = `<p class="text-center text-xs text-slate-400 font-bold py-10">لم يتم نشر أي فصول أو محاضرات لهذا المدرس بعد.</p>`;
-            } else {
+            const chaptersContainer = document.getElementById('content-chapters');
+            chaptersContainer.innerHTML = "";
+
+            if (t.gradeData && Object.keys(t.gradeData).length > 0) {
                 for (const grade in t.gradeData) {
-                    let gradeHTML = `
-                        <div class="space-y-3">
-                            <div class="bg-slate-800 text-white px-4 py-2 rounded-2xl text-xs font-black w-max shadow-sm">🏫 ${grade}</div>
+                    let gradeHtml = `
+                        <div class="bg-slate-50 p-4 rounded-[2rem] border border-slate-200/60 space-y-3">
+                            <h3 class="font-black text-xs text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-xl inline-block">📊 الصف الدراسي: ${grade}</h3>
                     `;
 
                     for (const chapter in t.gradeData[grade]) {
-                        const chapInfo = t.gradeData[grade][chapter];
-                        
-                        let lecturesListHTML = chapInfo.lectures.map(lec => `
-                            <div class="flex items-center justify-between p-2.5 bg-white border border-slate-100 rounded-xl shadow-xs">
-                                <span class="text-xs text-slate-700 font-bold">▶️ ${lec.num}</span>
-                                <a href="${lec.video}" target="_blank" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-xl text-[10px] font-black transition-all">مشاهدة 🎬</a>
-                            </div>
-                        `).join('');
-
-                        if(chapInfo.lectures.length === 0) {
-                            lecturesListHTML = `<p class="text-[10px] text-slate-400 italic text-center py-2">لا توجد محاضرات في هذا الفصل بعد</p>`;
+                        const chapterData = t.gradeData[grade][chapter];
+                        let pdfBtn = "";
+                        if (chapterData.pdf) {
+                            pdfBtn = `<button onclick="downloadPdf('${t.name}', '${grade}', '${chapter}')" class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[9px] font-black px-3 py-1 rounded-xl shadow-sm">📁 تحميل ملزمة الفصل (PDF)</button>`;
                         }
 
-                        gradeHTML += `
-                            <div class="bg-slate-100/70 p-4 rounded-[2.2rem] border border-slate-200/50 space-y-3">
+                        let lecturesHtml = "";
+                        if (chapterData.lectures && chapterData.lectures.length > 0) {
+                            lecturesHtml = chapterData.lectures.map(l => `
+                                <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-2xs">
+                                    <span class="text-xs font-bold text-slate-700">🎬 ${l.num}</span>
+                                    <button onclick="watchLecture('${l.video}')" class="bg-sky-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg shadow-sm">▶ مشاهدة الفيديو</button>
+                                </div>
+                            `).join('');
+                        } else {
+                            lecturesHtml = `<p class="text-slate-400 text-[10px] italic mr-2">لا توجد محاضرات منشورة بعد</p>`;
+                        }
+
+                        gradeHtml += `
+                            <div class="bg-white p-3 rounded-2xl border border-slate-100 space-y-2.5">
                                 <div class="flex justify-between items-center">
-                                    <h4 class="font-black text-xs text-slate-800">📁 ${chapter}</h4>
-                                    ${chapInfo.pdf ? `<a href="${chapInfo.pdf}" download="${chapter}-الملزمة.pdf" class="bg-sky-600 text-white text-[9px] px-3 py-1 rounded-full font-bold shadow-sm">📄 تحميل الملزمة</a>` : ''}
+                                    <h4 class="font-black text-xs text-slate-800">📌 ${chapter}</h4>
+                                    ${pdfBtn}
                                 </div>
-                                <div class="space-y-2">
-                                    ${lecturesListHTML}
-                                </div>
+                                <div class="space-y-1.5">${lecturesHtml}</div>
                             </div>
                         `;
                     }
 
-                    gradeHTML += `</div>`;
-                    cont.innerHTML += gradeHTML;
+                    gradeHtml += `</div>`;
+                    chaptersContainer.innerHTML += gradeHtml;
                 }
+            } else {
+                chaptersContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-8">الأستاذ لم ينشر فصول أو محاضرات بعد.</p>`;
             }
+
             document.getElementById('teacher-profile-view').classList.remove('hidden');
         }
 
-        function closeModal() { document.getElementById('sub-modal').style.display = 'none'; }
-        function closeTeacherProfile() { document.getElementById('teacher-profile-view').classList.add('hidden'); }
+        function closeTeacherProfile() {
+            document.getElementById('teacher-profile-view').classList.add('hidden');
+        }
 
-        window.onload = refreshUI;
+        function watchLecture(url) {
+            if(!url) return;
+            window.open(url, '_blank');
+        }
+
+        function downloadPdf(teacherName, grade, chapter) {
+            const teacher = db.teachers.find(t => t.name === teacherName);
+            if(teacher && teacher.gradeData && teacher.gradeData[grade] && teacher.gradeData[grade][chapter] && teacher.gradeData[grade][chapter].pdf) {
+                const base64Data = teacher.gradeData[grade][chapter].pdf;
+                const link = document.createElement('a');
+                link.href = base64Data;
+                link.download = `ملزمة_${chapter}_${teacherName}_${grade}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert("الملف غير متوفر");
+            }
+        }
+
+        function showSection(sec) {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('courses-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            document.getElementById('nav-home').classList.replace('text-sky-600', 'text-slate-300');
+            document.getElementById('nav-courses').classList.replace('text-sky-600', 'text-slate-300');
+            document.getElementById('nav-admin').classList.replace('text-sky-600', 'text-slate-300');
+            
+            document.getElementById('nav-home').querySelector('span').classList.add('opacity-50');
+            document.getElementById('nav-courses').querySelector('span').classList.add('opacity-50');
+            document.getElementById('nav-admin').querySelector('span').classList.add('opacity-50');
+
+            document.getElementById(sec + '-view').classList.remove('hidden');
+            const activeNav = document.getElementById('nav-' + sec);
+            activeNav.classList.replace('text-slate-300', 'text-sky-600');
+            activeNav.querySelector('span').classList.remove('opacity-50');
+        }
+
+        window.onload = function() {
+            refreshUI();
+            initSlider(); // تشغيل منظومة السلايدر الذكي فور تحميل الصفحة
+        };
     </script>
 </body>
 </html>
