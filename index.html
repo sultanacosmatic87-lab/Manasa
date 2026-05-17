@@ -36,7 +36,7 @@
         @media print {
             @page { size: A4 portrait; margin: 0; }
             html, body { width: 210mm; height: 297mm; background: white !important; min-width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
-            #home-view, #courses-view, #admin-view, nav, #app-sidebar, #sidebar-overlay, #sub-modal, #edit-student-modal, #pay-modal { 
+            #home-view, #courses-view, #admin-view, nav, #app-sidebar, #sidebar-overlay, #sub-modal, #edit-student-modal, #pay-modal, #auth-gate-view { 
                 display: none !important; 
                 visibility: hidden !important; 
             }
@@ -57,6 +57,29 @@
 
     <!-- حاوية عرض وطباعة البطاقة الذكية والوصولات الماليّة بجودة عالية -->
     <div id="print-card-area" class="hidden p-6"></div>
+
+    <!-- 🔐 شاشة تسجيل الدخول الموحدة للمنصة -->
+    <section id="auth-gate-view" class="fixed inset-0 bg-gradient-to-b from-slate-900 to-slate-800 z-[9999] max-w-md mx-auto p-6 flex flex-col justify-center items-center space-y-8">
+        <div class="text-center space-y-2">
+            <div class="w-16 h-16 rounded-3xl bg-sky-600 flex items-center justify-center text-white text-2xl font-black mx-auto shadow-xl shadow-sky-500/20">ME</div>
+            <h2 class="text-2xl font-black text-white tracking-tight">بوابة الدخول الذكية</h2>
+            <p class="text-[11px] text-slate-400 font-bold">أدخل الكود المخصص لك لتسجيل الدخول بأمان</p>
+        </div>
+
+        <div class="w-full bg-white/10 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/10 shadow-2xl space-y-4">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-slate-300 mr-1">🔑 كود المستخدم الفردي:</label>
+                <input type="text" id="auth-code-input" placeholder="مثال: ADMIN100 أو كود الطالب" class="w-full text-center tracking-widest font-black uppercase bg-white/5 border-white/10 text-white placeholder-slate-500 py-3.5 text-base rounded-2xl focus:border-sky-500 focus:bg-white focus:text-slate-800">
+            </div>
+            <button onclick="handleAuthLogin()" class="w-full bg-sky-600 hover:bg-sky-500 text-white py-3.5 rounded-2xl font-black text-sm shadow-lg shadow-sky-600/30 active:scale-[0.98] transition-all cursor-pointer">
+                🚀 تسجيل الدخول الآمن
+            </button>
+        </div>
+
+        <div class="text-center">
+            <p class="text-[10px] text-slate-500 font-bold">منظومة الحماية الذكية v4.2 Pro • ٢٠٢٦</p>
+        </div>
+    </section>
 
     <!-- السلايد بار الجانبي -->
     <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[300] hidden max-w-md mx-auto"></div>
@@ -126,6 +149,11 @@
                         <span class="text-xs font-bold text-slate-700">🔔 التنبيهات الفورية</span>
                         <span class="text-green-500 text-[10px] font-bold">مفعلة</span>
                     </div>
+                    <!-- زر تسجيل الخروج المضاف للعودة لبوابة الأكواد بأمان -->
+                    <div onclick="logoutUser()" class="flex items-center justify-between p-3 hover:bg-amber-50 rounded-xl cursor-pointer transition-all text-amber-600">
+                        <span class="text-xs font-black">🔒 تسجيل خروج من الحساب</span>
+                        <span class="text-[10px]">🚪</span>
+                    </div>
                     <div onclick="localStorage.clear(); location.reload();" class="flex items-center justify-between p-3 hover:bg-rose-50 rounded-xl cursor-pointer transition-all text-rose-600">
                         <span class="text-xs font-black">🧹 مسح التخزين المؤقت</span>
                         <span class="text-[10px]">🔄</span>
@@ -141,9 +169,11 @@
     </div>
 
     <!-- واجهة بروفايل المدرس -->
-    <div id="teacher-profile-view" class="fixed inset-0 bg-white z-[200] hidden overflow-y-auto no-scrollbar">
+    <div id="teacher-profile-view" class="fixed inset-0 bg-white z-[200] hidden overflow-y-auto no-scrollbar max-w-md mx-auto">
         <div class="relative h-48 bg-slate-900">
-            <button onclick="closeTeacherProfile()" class="absolute top-4 right-4 z-20 w-10 h-10 bg-black/20 backdrop-blur-md rounded-full text-white">✕</button>
+            <!-- زر الخروج الآمن المخصص عند دخول المدرس بكوده الخاص -->
+            <button id="tp-logout-btn" onclick="logoutUser()" class="absolute top-4 left-4 z-20 px-3 py-1.5 bg-rose-600 font-bold text-[10px] rounded-xl text-white shadow-lg hidden">تسجيل الخروج الآمن 🚪</button>
+            <button id="tp-close-btn" onclick="closeTeacherProfile()" class="absolute top-4 right-4 z-20 w-10 h-10 bg-black/20 backdrop-blur-md rounded-full text-white">✕</button>
             <div class="absolute bottom-[-20px] right-6 flex items-end gap-4">
                 <img id="tp-avatar" src="" class="w-24 h-24 rounded-[2rem] border-4 border-white shadow-xl object-cover bg-white">
                 <div class="mb-6">
@@ -566,7 +596,7 @@
     </div>
 
     <!-- شريط التنقل السفلي -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-md border-t border-slate-100 p-4 flex justify-around rounded-t-[2.5rem] shadow-2xl z-50">
+    <nav id="app-nav-bar" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-md border-t border-slate-100 p-4 flex justify-around rounded-t-[2.5rem] shadow-2xl z-50">
         <button onclick="showSection('home')" id="nav-home" class="flex flex-col items-center gap-1 text-sky-600 transition-all"><span class="text-2xl">🏠</span><span class="text-[10px] font-black tracking-tight">الرئيسية</span></button>
         <button onclick="showSection('courses')" id="nav-courses" class="flex flex-col items-center gap-1 text-slate-300 transition-all"><span class="text-2xl opacity-50">🎓</span><span class="text-[10px] font-bold">الدورات</span></button>
         <button onclick="showSection('admin')" id="nav-admin" class="flex flex-col items-center gap-1 text-slate-300 transition-all"><span class="text-2xl opacity-50">⚙️</span><span class="text-[10px] font-bold">الإدارة</span></button>
@@ -680,6 +710,63 @@
             startSliderAutoPlay(); // إعادة تشغيل المؤقت لتفادي الانتقال السريع المفاجئ
         }
 
+        // 🛡️ دالة نظام التحقق من الأكواد وبوابات الدخول الجديدة
+        function handleAuthLogin() {
+            const codeInput = document.getElementById('auth-code-input').value.trim();
+            if (!codeInput) return alert("يرجى إدخال كود الصلاحية المخصص لك أولاً.");
+
+            // 1. فحص كود المدير الإداري العام للمنصة
+            if (codeInput.toUpperCase() === "ADMIN100") {
+                sessionStorage.setItem('CURRENT_USER_ROLE', 'admin');
+                document.getElementById('auth-gate-view').classList.add('hidden');
+                document.getElementById('nav-admin').classList.remove('hidden');
+                document.getElementById('nav-home').classList.remove('hidden');
+                document.getElementById('sb-student-name').innerText = "المدير العام للنظام";
+                showSection('home');
+                return;
+            }
+
+            // 2. فحص كود المدرس (كود المدرس هو اسمه الثلاثي المسجل في النظام)
+            const matchedTeacher = db.teachers.find(t => t.name.trim() === codeInput);
+            if (matchedTeacher) {
+                sessionStorage.setItem('CURRENT_USER_ROLE', 'teacher');
+                sessionStorage.setItem('TEACHER_USER_ID', matchedTeacher.id);
+                document.getElementById('auth-gate-view').classList.add('hidden');
+                
+                // تهيئة واجهة بروفايل المدرس وإخفاء أزرار إغلاق التصفح العادية
+                document.getElementById('tp-close-btn').classList.add('hidden');
+                document.getElementById('tp-logout-btn').classList.remove('hidden');
+                openTeacherProfile(matchedTeacher.id);
+                return;
+            }
+
+            // 3. فحص كود دخول الطلاب المولد من الكاشير والمنصة
+            const matchedStudent = db.students.find(s => s.code.toUpperCase() === codeInput.toUpperCase());
+            if (matchedStudent) {
+                sessionStorage.setItem('CURRENT_USER_ROLE', 'student');
+                sessionStorage.setItem('STUDENT_USER_CODE', matchedStudent.code);
+                document.getElementById('auth-gate-view').classList.add('hidden');
+                
+                // قفل أزرار التصفح الخاصة بالإدارة والتحكم وتفعيل تصفح الطلاب
+                document.getElementById('nav-admin').classList.add('hidden');
+                document.getElementById('sb-student-name').innerText = matchedStudent.name;
+                
+                // إظهار وإبراز دورات الطالب فقط داخل المنصة لخصوصية البيانات
+                showSection('home');
+                return;
+            }
+
+            alert("❌ الكود المدخل غير صحيح أو غير مسجل بقاعدة البيانات!");
+        }
+
+        // دالة تسجيل الخروج والعودة الآمنة لبوابة الأكواد
+        function logoutUser() {
+            sessionStorage.clear();
+            document.getElementById('auth-code-input').value = "";
+            document.getElementById('teacher-profile-view').classList.add('hidden');
+            document.getElementById('auth-gate-view').classList.remove('hidden');
+        }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('app-sidebar');
             const overlay = document.getElementById('sidebar-overlay');
@@ -786,7 +873,7 @@
             db.teachers.push({ id: Date.now(), name, sub, img: tempImg, gradeData: {} });
             tempImg = ""; document.getElementById('adm-t-name').value = "";
             document.getElementById('img-status').innerText = "اختر صورة المدرس";
-            refreshUI(); alert("تم حفظ المدرس بنجاح");
+            refreshUI(); alert(`تم حفظ المدرس بنجاح!\n🔑 كود الدخول الخاص به هو اسمه الثلاثي تماماً: ${name}`);
         }
 
         function actionAddChapter() {
@@ -1433,8 +1520,20 @@
 
             const courseViewContainer = document.getElementById('courses-list-container');
             if(courseViewContainer) {
-                if(db.courses && db.courses.length > 0) {
-                    courseViewContainer.innerHTML = db.courses.map(c => `
+                // تصفية وعرض المواد وفق رتبة الطالب الذي سجل دخوله كودياً
+                const userRole = sessionStorage.getItem('CURRENT_USER_ROLE');
+                const studentCode = sessionStorage.getItem('STUDENT_USER_CODE');
+                let displayCourses = db.courses || [];
+
+                if(userRole === 'student' && studentCode) {
+                    const currentStudent = db.students.find(s => s.code === studentCode);
+                    if(currentStudent && currentStudent.type === 'دورات') {
+                        displayCourses = (db.courses || []).filter(c => c.title === currentStudent.courseName);
+                    }
+                }
+
+                if(displayCourses.length > 0) {
+                    courseViewContainer.innerHTML = displayCourses.map(c => `
                         <div class="bg-white border border-slate-100 p-5 rounded-[2rem] shadow-sm space-y-3 relative overflow-hidden">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -1620,6 +1719,18 @@
         window.onload = function() {
             refreshUI();
             initSlider(); // تشغيل منظومة السلايدر الذكي فور تحميل الصفحة
+            
+            // عند فتح الصفحة، التأكد من حالة تسجيل الدخول ومنع الدخول المباشر
+            const loggedInRole = sessionStorage.getItem('CURRENT_USER_ROLE');
+            if (loggedInRole) {
+                document.getElementById('auth-gate-view').classList.add('hidden');
+                if (loggedInRole === 'student') {
+                    document.getElementById('nav-admin').classList.add('hidden');
+                }
+                showSection('home');
+            } else {
+                document.getElementById('auth-gate-view').classList.remove('hidden');
+            }
         };
     </script>
 </body>
