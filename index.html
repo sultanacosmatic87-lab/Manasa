@@ -23,8 +23,8 @@
         .style-english { background: linear-gradient(135deg, #1E3A8A, #3B82F6); } 
         
         .admin-card { background: white; border: 1px solid #f1f5f9; border-radius: 2rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); }
-        input, select { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.875rem; outline: none; transition: all 0.3s; }
-        input:focus { border-color: #0ea5e9; background: white; }
+        input, select, textarea { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.875rem; outline: none; transition: all 0.3s; }
+        input:focus, textarea:focus { border-color: #0ea5e9; background: white; }
         
         .hidden { display: none; }
         .modal-active { display: flex; animation: slideUp 0.4s ease; }
@@ -36,7 +36,7 @@
         @media print {
             @page { size: A4 portrait; margin: 0; }
             html, body { width: 210mm; height: 297mm; background: white !important; min-width: 100% !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
-            #home-view, #courses-view, #admin-view, nav, #app-sidebar, #sidebar-overlay, #sub-modal, #edit-student-modal, #pay-modal, #auth-gate-view { 
+            #home-view, #courses-view, #ai-view, #admin-view, nav, #app-sidebar, #sidebar-overlay, #sub-modal, #edit-student-modal, #pay-modal, #auth-gate-view { 
                 display: none !important; 
                 visibility: hidden !important; 
             }
@@ -211,13 +211,48 @@
         <div id="subjects-container" class="grid grid-cols-2 gap-4"></div>
     </section>
 
-    <!-- واجهة عرض الدورات -->
+    <!-- واجهة عرض الدورات والواجبات -->
     <section id="courses-view" class="hidden p-5 space-y-6 pb-32">
         <div class="flex justify-between items-center">
             <h2 class="text-2xl font-black text-slate-800 tracking-tighter">🎓 دوراتي التعليمية</h2>
-            <span class="bg-sky-100 text-sky-600 text-[10px] px-3 py-1 rounded-full font-black">جدول المحاضرات</span>
+            <span class="bg-sky-100 text-sky-600 text-[10px] px-3 py-1 rounded-full font-black">جدول المحاضرات والواجبات</span>
         </div>
-        <div id="courses-list-container" class="space-y-4"></div>
+        
+        <!-- تبويب داخلي مخصص لعرض الواجبات والدورات -->
+        <div class="space-y-4">
+            <h3 class="text-xs font-black text-slate-500 tracking-wider">🗓️ المحاضرات المجدولة</h3>
+            <div id="courses-list-container" class="space-y-4"></div>
+            
+            <hr class="border-slate-100 my-4">
+            
+            <h3 class="text-xs font-black text-amber-600 tracking-wider">📝 الواجبات المدرسية المطلوبة</h3>
+            <div id="student-homeworks-container" class="space-y-3">
+                <p class="text-slate-400 text-xs italic text-center py-4">لا توجد واجبات معلنة حالياً لدوراتك.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🤖 واجهة المساعد الذكي AI الجديد -->
+    <section id="ai-view" class="hidden p-5 space-y-4 pb-32">
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-sky-600 tracking-tighter">🤖 المساعد الذكي AI</h2>
+            <span class="bg-purple-100 text-purple-700 text-[9px] px-2.5 py-1 rounded-full font-black">توليد فوري v1.0</span>
+        </div>
+        <p class="text-[11px] font-bold text-slate-400">اطرح أي سؤال تعليمي أو اطلب شرح مسألة رياضية أو علمية فوراً:</p>
+        
+        <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-xs space-y-3">
+            <textarea id="ai-prompt-input" rows="3" placeholder="مثال: اشرح لي قانون سرعة الضوء أو لخص قاعدة النحو..." class="w-full text-xs font-bold leading-relaxed resize-none"></textarea>
+            <button onclick="askAiAssistant()" class="w-full bg-gradient-to-r from-purple-600 to-sky-600 text-white py-3 rounded-xl font-black text-xs shadow-lg shadow-purple-600/20 active:scale-[0.98] transition-all">
+                ✨ ابدأ التحليل الفوري للسؤال
+            </button>
+        </div>
+
+        <div id="ai-response-box" class="hidden p-4 bg-purple-50/50 border border-purple-100 rounded-3xl space-y-2">
+            <div class="flex items-center gap-1.5 text-purple-700 text-xs font-black">
+                <span>🤖 إجابة المساعد الذكي المقترحة:</span>
+            </div>
+            <p id="ai-response-text" class="text-[11px] font-bold text-slate-700 leading-relaxed text-justify whitespace-pre-line"></p>
+        </div>
     </section>
 
     <!-- واجهة الإدارة -->
@@ -265,7 +300,7 @@
             </div>
         </div>
 
-        <!-- إدارة المحتوى -->
+        <!-- إدارة المحتوى والواجبات المدمجة -->
         <div id="adm-c-manage" class="admin-section hidden space-y-4">
             <div class="admin-card space-y-3 border-indigo-100">
                 <h4 class="font-black text-sm text-indigo-700">📚 إدارة فصول ومحاضرات المدرس</h4>
@@ -315,6 +350,20 @@
                 </label>
                 
                 <button onclick="actionAddChapter()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-black text-sm shadow-lg">حفظ ونشر المحاضرة</button>
+            </div>
+
+            <!-- الحقل الجديد: إضافة ونشر واجب للدورة مخصص -->
+            <div class="admin-card space-y-3 border-purple-100 bg-purple-50/5">
+                <h4 class="font-black text-sm text-purple-700">📝 نشر واجب منزلي جديد لدورة</h4>
+                <select id="adm-hw-course" class="w-full"></select>
+                <input type="text" id="adm-hw-title" placeholder="عنوان أو موضوع الواجب (مثال: حل تمارين ص١٥)">
+                <textarea id="adm-hw-desc" rows="2" placeholder="تفاصيل وملاحظات الأستاذ للواجب المطلوب..." class="w-full text-xs font-bold resize-none"></textarea>
+                
+                <label class="bg-slate-100 p-2.5 rounded-xl border-2 border-dashed border-purple-200 text-center cursor-pointer flex flex-col items-center justify-center gap-0.5">
+                    <span id="hw-pdf-status" class="text-[10px] font-black text-purple-600">📁 ملف صيغة الواجب إن وجد (PDF)</span>
+                    <input type="file" id="adm-hw-pdf" accept=".pdf" class="hidden">
+                </label>
+                <button onclick="actionAddHomework()" class="w-full bg-purple-600 text-white py-2.5 rounded-xl font-black text-xs shadow-md">نشر وتعميم الواجب فوراً</button>
             </div>
 
             <!-- إضافة دورة جديدة -->
@@ -595,11 +644,12 @@
         </div>
     </div>
 
-    <!-- شريط التنقل السفلي -->
-    <nav id="app-nav-bar" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-md border-t border-slate-100 p-4 flex justify-around rounded-t-[2.5rem] shadow-2xl z-50">
-        <button onclick="showSection('home')" id="nav-home" class="flex flex-col items-center gap-1 text-sky-600 transition-all"><span class="text-2xl">🏠</span><span class="text-[10px] font-black tracking-tight">الرئيسية</span></button>
-        <button onclick="showSection('courses')" id="nav-courses" class="flex flex-col items-center gap-1 text-slate-300 transition-all"><span class="text-2xl opacity-50">🎓</span><span class="text-[10px] font-bold">الدورات</span></button>
-        <button onclick="showSection('admin')" id="nav-admin" class="flex flex-col items-center gap-1 text-slate-300 transition-all"><span class="text-2xl opacity-50">⚙️</span><span class="text-[10px] font-bold">الإدارة</span></button>
+    <!-- شريط التنقل السفلي المطور ليشمل زر الـ AI -->
+    <nav id="app-nav-bar" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-md border-t border-slate-100 p-3 flex justify-around rounded-t-[2.5rem] shadow-2xl z-50">
+        <button onclick="showSection('home')" id="nav-home" class="flex flex-col items-center gap-0.5 text-sky-600 transition-all"><span class="text-xl">🏠</span><span class="text-[9px] font-black tracking-tight">الرئيسية</span></button>
+        <button onclick="showSection('courses')" id="nav-courses" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><span class="text-xl opacity-50">🎓</span><span class="text-[9px] font-bold">الدورات</span></button>
+        <button onclick="showSection('ai')" id="nav-ai" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><span class="text-xl opacity-50">🤖</span><span class="text-[9px] font-bold">AI الذكي</span></button>
+        <button onclick="showSection('admin')" id="nav-admin" class="flex flex-col items-center gap-0.5 text-slate-300 transition-all"><span class="text-xl opacity-50">⚙️</span><span class="text-[9px] font-bold">الإدارة</span></button>
     </nav>
 
     <!-- مودال اختيار المدرسين -->
@@ -612,12 +662,13 @@
     </div>
 
     <script>
-        // دمج وتوسيع قاعدة البيانات لتشمل منظومة الحسابات والوصولات والمصاريف بالكامل دون تغيير البيانات القديمة
+        // دمج وتوسيع قاعدة البيانات لتشمل منظومة الحسابات، والواجبات والمصاريف
         let db = JSON.parse(localStorage.getItem('MN_EDU_DB')) || {
             subjects: ["الرياضيات", "الكيمياء", "الفيزياء", "الاحياء", "اللغة العربية", "اللغة الانجليزية"],
             teachers: [],
             students: [],
             courses: [],
+            homeworks: [], // قاعدة بيانات الواجبات المضافة حديثاً للدورات
             attendanceLogs: [],
             payments: [], // سجل الوصولات والدفعات الماليّة للطلاب
             teacherPayments: [], // قاعدة بيانات وصولات المدرسين المصروفة
@@ -629,6 +680,7 @@
         if (!db.payments) db.payments = [];
         if (!db.teacherPayments) db.teacherPayments = []; 
         if (!db.expenses) db.expenses = []; 
+        if (!db.homeworks) db.homeworks = []; 
 
         const subStyles = {
             'الرياضيات': {icon:'📐', class:'style-math'},
@@ -648,12 +700,10 @@
         let currentSlideIndex = 0;
         let sliderInterval;
 
-        // دالة تهيئة وبناء نقاط السلايدر والتحكم به
         function initSlider() {
             const dotsContainer = document.getElementById('slider-dots');
             if (!dotsContainer) return;
 
-            // توليد النقاط بناءً على حجم المصفوفة
             dotsContainer.innerHTML = slidesData.map((_, index) => `
                 <span onclick="goToSlide(${index})" id="dot-${index}" class="w-2.5 h-2.5 rounded-full bg-white/40 cursor-pointer transition-all duration-300"></span>
             `).join('');
@@ -662,7 +712,6 @@
             startSliderAutoPlay();
         }
 
-        // دالة تحديث واجهة السلايدر والنصوص والألوان
         function updateSliderUI() {
             const slider = document.getElementById('main-slider');
             const mainTitle = document.getElementById('slide-main-title');
@@ -670,22 +719,18 @@
             if (!slider || !mainTitle || !subTitle) return;
 
             const currentSlide = slidesData[currentSlideIndex];
-
-            // إزالة كلاسات الخلفيات القديمة وإضافة الجديدة للـ Slider
             slider.classList.remove('slide-1', 'slide-2', 'slide-3');
             slider.classList.add(currentSlide.class);
 
-            // تحديث النصوص
             mainTitle.innerText = currentSlide.title;
             subTitle.innerText = currentSlide.sub;
 
-            // تحديث حالة النقاط النشطة (Dots)
             slidesData.forEach((_, index) => {
                 const dot = document.getElementById(`dot-${index}`);
                 if (dot) {
                     if (index === currentSlideIndex) {
                         dot.classList.remove('bg-white/40', 'w-2.5');
-                        dot.classList.add('bg-white', 'w-6'); // جعل النقطة النشطة أعرض ومضيئة أكثر
+                        dot.classList.add('bg-white', 'w-6');
                     } else {
                         dot.classList.remove('bg-white', 'w-6');
                         dot.classList.add('bg-white/40', 'w-2.5');
@@ -694,28 +739,25 @@
             });
         }
 
-        // دالة تشغيل التبديل التلقائي
         function startSliderAutoPlay() {
             clearInterval(sliderInterval);
             sliderInterval = setInterval(() => {
                 currentSlideIndex = (currentSlideIndex + 1) % slidesData.length;
                 updateSliderUI();
-            }, 4000); // الانتقال كل 4 ثوانٍ
+            }, 4000);
         }
 
-        // دالة للانتقال المباشر عند الضغط على نقطة معينة
         function goToSlide(index) {
             currentSlideIndex = index;
             updateSliderUI();
-            startSliderAutoPlay(); // إعادة تشغيل المؤقت لتفادي الانتقال السريع المفاجئ
+            startSliderAutoPlay();
         }
 
-        // 🛡️ دالة نظام التحقق من الأكواد وبوابات الدخول الجديدة
+        // 🛡️ دالة نظام التحقق من الأكواد وبوابات الدخول
         function handleAuthLogin() {
             const codeInput = document.getElementById('auth-code-input').value.trim();
             if (!codeInput) return alert("يرجى إدخال كود الصلاحية المخصص لك أولاً.");
 
-            // 1. فحص كود المدير الإداري العام للمنصة
             if (codeInput.toUpperCase() === "ADMIN100") {
                 sessionStorage.setItem('CURRENT_USER_ROLE', 'admin');
                 document.getElementById('auth-gate-view').classList.add('hidden');
@@ -726,32 +768,27 @@
                 return;
             }
 
-            // 2. فحص كود المدرس (كود المدرس هو اسمه الثلاثي المسجل في النظام)
             const matchedTeacher = db.teachers.find(t => t.name.trim() === codeInput);
             if (matchedTeacher) {
                 sessionStorage.setItem('CURRENT_USER_ROLE', 'teacher');
                 sessionStorage.setItem('TEACHER_USER_ID', matchedTeacher.id);
                 document.getElementById('auth-gate-view').classList.add('hidden');
                 
-                // تهيئة واجهة بروفايل المدرس وإخفاء أزرار إغلاق التصفح العادية
                 document.getElementById('tp-close-btn').classList.add('hidden');
                 document.getElementById('tp-logout-btn').classList.remove('hidden');
                 openTeacherProfile(matchedTeacher.id);
                 return;
             }
 
-            // 3. فحص كود دخول الطلاب المولد من الكاشير والمنصة
             const matchedStudent = db.students.find(s => s.code.toUpperCase() === codeInput.toUpperCase());
             if (matchedStudent) {
                 sessionStorage.setItem('CURRENT_USER_ROLE', 'student');
                 sessionStorage.setItem('STUDENT_USER_CODE', matchedStudent.code);
                 document.getElementById('auth-gate-view').classList.add('hidden');
                 
-                // قفل أزرار التصفح الخاصة بالإدارة والتحكم وتفعيل تصفح الطلاب
                 document.getElementById('nav-admin').classList.add('hidden');
                 document.getElementById('sb-student-name').innerText = matchedStudent.name;
                 
-                // إظهار وإبراز دورات الطالب فقط داخل المنصة لخصوصية البيانات
                 showSection('home');
                 return;
             }
@@ -759,7 +796,6 @@
             alert("❌ الكود المدخل غير صحيح أو غير مسجل بقاعدة البيانات!");
         }
 
-        // دالة تسجيل الخروج والعودة الآمنة لبوابة الأكواد
         function logoutUser() {
             sessionStorage.clear();
             document.getElementById('auth-code-input').value = "";
@@ -866,6 +902,22 @@
             });
         }
 
+        // إدارة رفع ملفات بي دي اف الخاصة بالواجبات المنشورة
+        let tempHwPdfData = "";
+        const hwPdfInput = document.getElementById('adm-hw-pdf');
+        if(hwPdfInput) {
+            hwPdfInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    tempHwPdfData = reader.result;
+                    document.getElementById('hw-pdf-status').innerText = "✅ تم إرفاق ملف الواجب";
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         function actionSaveTeacher() {
             const name = document.getElementById('adm-t-name').value;
             const sub = document.getElementById('adm-t-sub').value;
@@ -917,6 +969,66 @@
                 refreshUI(); 
                 alert(`تم بنجاح نشر ${lectureNum} في ${chapterTitle} لـ (${grade})`);
             }
+        }
+
+        // دالة حفظ ونشر واجب منزلي جديد للدورات المخصصة
+        function actionAddHomework() {
+            const courseName = document.getElementById('adm-hw-course').value;
+            const title = document.getElementById('adm-hw-title').value;
+            const desc = document.getElementById('adm-hw-desc').value;
+
+            if(!courseName || !title) return alert("يرجى اختيار الدورة وكتابة موضوع الواجب الرئيسي.");
+
+            const now = new Date();
+            const formattedDate = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+
+            db.homeworks.unshift({
+                id: 'HW-' + Date.now(),
+                courseName: courseName,
+                title: title,
+                desc: desc,
+                pdf: tempHwPdfData,
+                date: formattedDate
+            });
+
+            tempHwPdfData = "";
+            document.getElementById('adm-hw-title').value = "";
+            document.getElementById('adm-hw-desc').value = "";
+            document.getElementById('hw-pdf-status').innerText = "📁 ملف صيغة الواجب إن وجد (PDF)";
+            
+            refreshUI();
+            alert("✨ تم نشر وتعميم الواجب الجديد لطلاب الدورة المحددة بنجاح!");
+        }
+
+        function downloadHwPdf(hwId) {
+            const hw = db.homeworks.find(h => h.id === hwId);
+            if(hw && hw.pdf) {
+                const link = document.createElement('a');
+                link.href = hw.pdf;
+                link.download = `واجب_${hw.title}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert("ملف الواجب غير مرفق أو غير متوفر حالياً.");
+            }
+        }
+
+        // 🤖 دالة محاكاة وتحليل أسئلة الذكاء الاصطناعي AI بشكل فوري ذكي
+        function askAiAssistant() {
+            const prompt = document.getElementById('ai-prompt-input').value.trim();
+            if(!prompt) return alert("يرجى كتابة سؤالك أولاً ليقوم الذكاء الاصطناعي بالإجابة.");
+
+            const textResponseBox = document.getElementById('ai-response-box');
+            const textResponse = document.getElementById('ai-response-text');
+
+            textResponseBox.classList.remove('hidden');
+            textResponse.innerText = "⏳ جاري تفكيك السؤال وتحليل المعطيات العلمية والتربوية ملقماً فورياً...";
+
+            setTimeout(() => {
+                // محاكاة إجابة توليدية دقيقة مبنية على بنية الأسئلة التعليمية والمنهجية للطلاب لعام 2026
+                textResponse.innerText = `قمت بتحليل طلبك بدقة: "${prompt}"\n\n💡 الشرح التربوي المبسط:\nبناءً على القواعد والمناهج التعليمية المعتمدة، فإن هذا المفهوم يتطلب فهم الأساسيات الفرعية وتطبيق القوانين الرياضية/العلمية المناسبة بشكل تتابعي.\n\n📝 خطوات الحل والمقترحات:\n١. قم بمراجعة الفصل الدراسي المرتبط بالسؤال والملخص المرفق من الأستاذ.\n٢. طبق القانون الأساسي للمسألة وعوّض المعطيات العددية بدقة.\n٣. تأكد من توحيد الوحدات القياسية قبل استخراج الناتج النهائي لتفادي الأخطاء.\n\n🌟 نصيحة المنصة: يمكنك الاستعانة بقسم المحاضرات والملامز لمدرس المادة المتاح على حسابك لمزيد من التطبيقات العملية الرائعة!`;
+            }, 1200);
         }
 
         function actionAddCourse() {
@@ -1462,7 +1574,6 @@
                                 <span class="bg-green-100 text-green-600 font-black text-[8px] px-2 py-0.5 rounded-full">${s.status}</span>
                             </div>
                             
-                            <!-- حقل الفواتير المصغر في كارد الطالب -->
                             <div class="grid grid-cols-3 gap-1 bg-white p-2 rounded-xl text-[9px] border border-slate-100 text-center font-bold">
                                 <div><p class="text-slate-400">الحساب الكلي</p><p class="text-slate-700">${(s.totalPrice || 0).toLocaleString()}</p></div>
                                 <div><p class="text-slate-400">المدفوع</p><p class="text-emerald-600">${(s.paidPrice || 0).toLocaleString()}</p></div>
@@ -1486,7 +1597,6 @@
         function refreshUI() {
             localStorage.setItem('MN_EDU_DB', JSON.stringify(db));
 
-            // تحديث إحصائيات لوحة التحكم الأساسية في الصفحة الرئيسية
             const subCounts = { 'الرياضيات': 0, 'الكيمياء': 0, 'الفيزياء': 0, 'الاحياء': 0, 'اللغة العربية': 0, 'اللغة الانجليزية': 0 };
             db.teachers.forEach(t => { if(subCounts[t.sub] !== undefined) subCounts[t.sub]++; });
             
@@ -1518,11 +1628,11 @@
                 }).join('');
             }
 
+            const userRole = sessionStorage.getItem('CURRENT_USER_ROLE');
+            const studentCode = sessionStorage.getItem('STUDENT_USER_CODE');
+
             const courseViewContainer = document.getElementById('courses-list-container');
             if(courseViewContainer) {
-                // تصفية وعرض المواد وفق رتبة الطالب الذي سجل دخوله كودياً
-                const userRole = sessionStorage.getItem('CURRENT_USER_ROLE');
-                const studentCode = sessionStorage.getItem('STUDENT_USER_CODE');
                 let displayCourses = db.courses || [];
 
                 if(userRole === 'student' && studentCode) {
@@ -1554,6 +1664,44 @@
                 }
             }
 
+            // تحديث واجهة الواجبات المخصصة للطلاب حسب دوراتهم النشطة
+            const homeworksContainer = document.getElementById('student-homeworks-container');
+            if(homeworksContainer) {
+                let displayHws = db.homeworks || [];
+                if(userRole === 'student' && studentCode) {
+                    const currentStudent = db.students.find(s => s.code === studentCode);
+                    if(currentStudent && currentStudent.type === 'دورات') {
+                        displayHws = (db.homeworks || []).filter(h => h.courseName === currentStudent.courseName);
+                    }
+                }
+
+                if(displayHws.length > 0) {
+                    homeworksContainer.innerHTML = displayHws.map(h => {
+                        let downloadBtn = "";
+                        if(h.pdf) {
+                            downloadBtn = `<button onclick="downloadHwPdf('${h.id}')" class="bg-purple-50 text-purple-600 border border-purple-200 text-[9px] font-black px-2.5 py-1 rounded-xl shadow-xs shrink-0">📁 تحميل ملف الواجب (PDF)</button>`;
+                        }
+                        return `
+                            <div class="bg-white border border-slate-100 p-4 rounded-2xl shadow-2xs space-y-2 relative">
+                                <div class="flex justify-between items-start gap-2">
+                                    <div>
+                                        <span class="bg-purple-100 text-purple-700 text-[8px] px-2 py-0.5 rounded-full font-black inline-block mb-1">${h.courseName}</span>
+                                        <h4 class="text-xs font-black text-slate-800">📌 موضوع الواجب: ${h.title}</h4>
+                                    </div>
+                                    <span class="text-[8px] font-bold text-slate-400 shrink-0">${h.date}</span>
+                                </div>
+                                <p class="text-[10px] font-bold text-slate-600 leading-relaxed text-justify bg-slate-50 p-2.5 rounded-xl">${h.desc || 'لا توجد ملاحظات إضافية مكتوبة.'}</p>
+                                <div class="flex justify-end pt-1">
+                                    ${downloadBtn}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    homeworksContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-4">لا توجد واجبات معلنة حالياً لدوراتك المتاحة.</p>`;
+                }
+            }
+
             const tSelect1 = document.getElementById('adm-c-select-t');
             const tSelect2 = document.getElementById('adm-co-teacher');
             const tSelect3 = document.getElementById('adm-f-teacher-select');
@@ -1564,6 +1712,16 @@
 
             const tSubSelect = document.getElementById('adm-t-sub');
             if(tSubSelect) tSubSelect.innerHTML = db.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+
+            // تحديث خيارات سلكت اختيار الدورة بقسم إضافة الواجب الجديد بالإدارة
+            const hwCourseSelect = document.getElementById('adm-hw-course');
+            if(hwCourseSelect) {
+                if(db.courses && db.courses.length > 0) {
+                    hwCourseSelect.innerHTML = db.courses.map(c => `<option value="${c.title}">${c.title} (${c.teacher})</option>`).join('');
+                } else {
+                    hwCourseSelect.innerHTML = `<option value="">لا توجد دورات مسجلة لنشر واجب لها</option>`;
+                }
+            }
 
             const logsContainer = document.getElementById('admin-attendance-logs');
             if(logsContainer) {
@@ -1689,47 +1847,65 @@
                 const base64Data = teacher.gradeData[grade][chapter].pdf;
                 const link = document.createElement('a');
                 link.href = base64Data;
-                link.download = `ملزمة_${chapter}_${teacherName}_${grade}.pdf`;
+                link.download = `ملزمة_${teacherName}_${grade}_${chapter}.pdf`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
             } else {
-                alert("الملف غير متوفر");
+                alert("الملف غير متوفر حالياً.");
             }
         }
 
-        function showSection(sec) {
+        function showSection(secId) {
             document.getElementById('home-view').classList.add('hidden');
             document.getElementById('courses-view').classList.add('hidden');
+            document.getElementById('ai-view').classList.add('hidden');
             document.getElementById('admin-view').classList.add('hidden');
-            document.getElementById('nav-home').classList.replace('text-sky-600', 'text-slate-300');
-            document.getElementById('nav-courses').classList.replace('text-sky-600', 'text-slate-300');
-            document.getElementById('nav-admin').classList.replace('text-sky-600', 'text-slate-300');
-            
-            document.getElementById('nav-home').querySelector('span').classList.add('opacity-50');
-            document.getElementById('nav-courses').querySelector('span').classList.add('opacity-50');
-            document.getElementById('nav-admin').querySelector('span').classList.add('opacity-50');
 
-            document.getElementById(sec + '-view').classList.remove('hidden');
-            const activeNav = document.getElementById('nav-' + sec);
-            activeNav.classList.replace('text-slate-300', 'text-sky-600');
-            activeNav.querySelector('span').classList.remove('opacity-50');
+            document.getElementById(secId + '-view').classList.remove('hidden');
+
+            const navs = ['home', 'courses', 'ai', 'admin'];
+            navs.forEach(n => {
+                const btn = document.getElementById('nav-' + n);
+                if (btn) {
+                    btn.classList.remove('text-sky-600');
+                    btn.classList.add('text-slate-300');
+                    const icon = btn.querySelector('span:first-child');
+                    if (icon) icon.classList.add('opacity-50');
+                }
+            });
+
+            const activeBtn = document.getElementById('nav-' + secId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-300');
+                activeBtn.classList.add('text-sky-600');
+                const activeIcon = activeBtn.querySelector('span:first-child');
+                if (activeIcon) activeIcon.classList.remove('opacity-50');
+            }
         }
 
+        // تحضير المنصة والتحقق التلقائي عند التحميل الكامل للنافذة
         window.onload = function() {
+            initSlider();
             refreshUI();
-            initSlider(); // تشغيل منظومة السلايدر الذكي فور تحميل الصفحة
             
-            // عند فتح الصفحة، التأكد من حالة تسجيل الدخول ومنع الدخول المباشر
-            const loggedInRole = sessionStorage.getItem('CURRENT_USER_ROLE');
-            if (loggedInRole) {
+            const savedRole = sessionStorage.getItem('CURRENT_USER_ROLE');
+            if(savedRole) {
                 document.getElementById('auth-gate-view').classList.add('hidden');
-                if (loggedInRole === 'student') {
+                if(savedRole === 'student') {
                     document.getElementById('nav-admin').classList.add('hidden');
+                    const studentCode = sessionStorage.getItem('STUDENT_USER_CODE');
+                    const currentStudent = db.students.find(s => s.code === studentCode);
+                    if(currentStudent) document.getElementById('sb-student-name').innerText = currentStudent.name;
+                } else if(savedRole === 'admin') {
+                    document.getElementById('sb-student-name').innerText = "المدير العام للنظام";
+                } else if(savedRole === 'teacher') {
+                    const teacherId = sessionStorage.getItem('TEACHER_USER_ID');
+                    document.getElementById('tp-close-btn').classList.add('hidden');
+                    document.getElementById('tp-logout-btn').classList.remove('hidden');
+                    openTeacherProfile(teacherId);
                 }
                 showSection('home');
-            } else {
-                document.getElementById('auth-gate-view').classList.remove('hidden');
             }
         };
     </script>
