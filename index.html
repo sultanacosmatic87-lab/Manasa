@@ -18,7 +18,7 @@
         input, select, textarea { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.875rem; outline: none; transition: all 0.3s; }
         input:focus, select:focus, textarea:focus { border-color: #0ea5e9; background: white; }
         
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         .modal-active { display: flex; animation: slideUp 0.4s ease; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
@@ -150,14 +150,13 @@
             <div id="slider-dots" class="absolute left-6 bottom-6 flex gap-1.5"></div>
         </div>
 
-        <!-- 📚 قسم المواد الدراسية الجديد (مرتبط برمجياً بالأساتذة) -->
+        <!-- 📚 قسم المواد الدراسية الجديد -->
         <div class="space-y-3">
             <h3 class="text-sm font-black text-slate-800 flex items-center gap-1.5">📂 حقيبة المواد لـ السادس العلمي</h3>
-            <!-- سيتم توليد البطاقات هنا برمجياً من دالة refreshUI لربط المدرسين -->
             <div id="home-subjects-container" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
         </div>
 
-        <!-- الدخول المباشر للمدرسين -->
+        <!-- الدعاية للمدرسين -->
         <div class="grid grid-cols-1 gap-4">
             <div class="p-5 bg-gradient-to-r from-slate-800 to-slate-900 rounded-[2rem] text-white shadow-lg space-y-3">
                 <h3 class="text-base font-black">📚 جدول المحاضرات والفصول المدمجة</h3>
@@ -167,7 +166,7 @@
         </div>
     </section>
 
-    <!-- واجهة المجلد التعليمي للمادة (مودال منبثق فخم) -->
+    <!-- واجهة المجلد التعليمي للمادة -->
     <div id="subject-folder-modal" class="fixed inset-0 bg-slate-900/60 z-[500] hidden items-end justify-center backdrop-blur-xs">
         <div class="bg-white w-full max-w-md md:max-w-2xl rounded-t-[2.5rem] p-6 space-y-5 shadow-2xl overflow-y-auto max-h-[85vh] no-scrollbar">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -178,7 +177,6 @@
                 <button onclick="closeSubjectFolder()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">✕</button>
             </div>
 
-            <!-- قسم الملازم والوزاريات -->
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center space-y-2">
                     <p class="text-xs font-black text-slate-700">📕 ملزمة المادة المعتمدة</p>
@@ -192,7 +190,6 @@
                 </div>
             </div>
 
-            <!-- قسم رفع الواجبات كصورة من قبل الطالب -->
             <div class="bg-amber-50/40 border border-amber-200/60 p-4 rounded-2xl space-y-3">
                 <h4 class="text-xs font-black text-amber-800 flex items-center gap-1">📝 إرسال حل الواجب المدرسـي</h4>
                 <p class="text-[10px] text-slate-500 font-bold">يمكنك التقاط صورة لحل الواجب في دفترك ورفعها هنا ليراجعها المدرس فوراً:</p>
@@ -202,7 +199,6 @@
                     <input type="file" id="folder-hw-file-input" accept="image/*" class="hidden" onchange="handleUploadHomeworkImage()">
                 </label>
 
-                <!-- صندوق عرض صورة الواجب المرفوعة مسبقاً -->
                 <div id="folder-preview-hw-area" class="hidden space-y-1.5">
                     <p class="text-[9px] font-bold text-slate-400">🖼️ صورة آخر واجب قمت برسمه ورفعه للمادة:</p>
                     <img id="folder-hw-preview-img" src="" class="w-full max-h-40 object-cover rounded-xl border border-slate-200">
@@ -211,7 +207,7 @@
         </div>
     </div>
 
-    <!-- واجهة عرض الدورات والواجبات المخصصة للطلاب -->
+    <!-- واجهة عرض الدورات والواجبات مخصصة للطلاب -->
     <section id="courses-view" class="hidden p-5 space-y-6 pb-32">
         <div class="flex justify-between items-center">
             <h2 class="text-2xl font-black text-slate-800 tracking-tighter">🎓 الحصص والواجبات المدرسية</h2>
@@ -274,7 +270,7 @@
             <button onclick="switchAdminTab('sub-manage')" class="adm-tab bg-white text-slate-400 px-5 py-2 rounded-xl text-xs font-bold shrink-0 border border-slate-100 transition-all">📂 لوحة ملفات المواد</button>
         </div>
 
-        <!-- تبويب جديد: إدارة ملفات المواد للست مواد -->
+        <!-- تبويب: إدارة ملفات المواد للست مواد -->
         <div id="adm-sub-manage" class="admin-section hidden space-y-4">
             <div class="admin-card space-y-3 border-sky-100">
                 <h4 class="font-black text-sm text-sky-700">📂 نشر الملازم والوزاريات للمواد الأساسية</h4>
@@ -326,7 +322,7 @@
             </div>
         </div>
 
-        <!-- تبويب: إدارة المحتوى والواجبات المخصصة للسادس العلمي -->
+        <!-- تبويب: إدارة المحتوى والواجبات مخصصة للسادس العلمي -->
         <div id="adm-c-manage" class="admin-section hidden space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="admin-card space-y-3 border-indigo-100">
@@ -373,7 +369,7 @@
             </div>
         </div>
 
-        <!-- تبويب: تسجيل وإدارة شؤون الطلاب للسادس العلمي -->
+        <!-- تبويب: تسجيل وإدارة شؤون الطلاب -->
         <div id="adm-s-manage" class="admin-section hidden space-y-4">
             <div class="admin-card space-y-3 border-sky-100">
                 <h4 class="font-black text-sm text-sky-700">👤 تسجيل طالب جديد وتوزيع النسب المالية</h4>
@@ -459,7 +455,7 @@
                     <h4 class="font-black text-sm text-amber-700">💸 قيد مصروفات إدارية عامة</h4>
                     <div class="flex flex-col gap-2">
                         <input type="text" id="adm-expense-title" placeholder="العنوان (مثال: إيجار قاعة، إنترنت)">
-                        <input type="number" id="adm-expense-amount" placeholder="المبلغ بالدنانير العرقية">
+                        <input type="number" id="adm-expense-amount" placeholder="المبلغ بالدنانير العراقية">
                         <button onclick="actionSubmitExpense()" class="bg-amber-600 text-white py-2.5 rounded-xl font-black text-xs cursor-pointer">تأكيد قيد المصروف</button>
                     </div>
                 </div>
@@ -537,6 +533,20 @@
     </nav>
 
     <script>
+        // --- دالة التحكم بالصلاحيات ---
+        function checkPermissions() {
+            const role = sessionStorage.getItem('CURRENT_USER_ROLE');
+            const adminNav = document.getElementById('nav-admin');
+            const adminView = document.getElementById('admin-view');
+
+            if (role !== 'admin') {
+                if(adminNav) adminNav.style.display = 'none';
+                if(adminView) adminView.innerHTML = '<div class="p-10 text-center text-slate-400">عذراً، هذه الواجهة مخصصة للمدير فقط.</div>';
+            } else {
+                if(adminNav) adminNav.style.display = 'flex';
+            }
+        }
+
         // دمج بيانات المواد داخل قاعدة البيانات الشاملة للمنصة
         let db = JSON.parse(localStorage.getItem('TEACHER_PLATFORM_DB')) || {
             teachers: [],
@@ -549,7 +559,6 @@
             subjectsData: {}
         };
 
-        // قائمة المواد الأساسية لبرمجتها في الشاشة الرئيسية
         const subjectsConfig = [
             { name: 'اللغة العربية', icon: '📖', gradient: 'from-amber-500 to-orange-600' },
             { name: 'اللغة الانجليزية', icon: '🔤', gradient: 'from-sky-500 to-indigo-600' },
@@ -570,6 +579,7 @@
         window.onload = function() {
             initSlider();
             refreshUI();
+            checkPermissions(); // تفعيل الحماية عند التحميل
         };
 
         function initSlider() {
@@ -686,12 +696,14 @@
             }
 
             const modal = document.getElementById('subject-folder-modal');
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('modal-active'), 10);
+            modal.classList.remove('hidden');
+            modal.classList.add('modal-active');
         }
 
         function closeSubjectFolder() {
-            document.getElementById('subject-folder-modal').style.display = 'none';
+            const modal = document.getElementById('subject-folder-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('modal-active');
         }
 
         function handleUploadHomeworkImage() {
@@ -775,6 +787,7 @@
                 sessionStorage.setItem('CURRENT_USER_ROLE', 'admin');
                 document.getElementById('auth-gate-view').classList.add('hidden');
                 document.getElementById('sb-student-name').innerText = "مالك المنصة والمدير";
+                checkPermissions(); 
                 showSection('home');
                 return;
             }
@@ -796,6 +809,7 @@
                 sessionStorage.setItem('STUDENT_USER_CODE', matchedStudent.code);
                 document.getElementById('auth-gate-view').classList.add('hidden');
                 document.getElementById('sb-student-name').innerText = matchedStudent.name;
+                checkPermissions(); 
                 showSection('home');
                 return;
             }
@@ -807,6 +821,7 @@
             document.getElementById('auth-code-input').value = "";
             document.getElementById('teacher-profile-view').classList.add('hidden');
             document.getElementById('auth-gate-view').classList.remove('hidden');
+            location.reload(); 
         }
 
         function switchAdminTab(target) {
@@ -907,87 +922,131 @@
             const paidPrice = parseFloat(document.getElementById('adm-s-paid').value) || 0;
             const ratio = parseFloat(document.getElementById('adm-s-ratio').value) || 0;
 
-            if(!name || !phone || !courseName) return alert("يرجى إكمال بيانات قيد الطالب بنجاح.");
-            const studentCode = 'STUD-' + Math.floor(1000 + Math.random() * 9000);
-            const studentId = Date.now();
-            const dateStr = new Date().toLocaleDateString('ar-EG');
+            if(!name || !phone || !courseName) return alert("يرجى إكمال بيانات قيد الطالب الأساسية ومجموعته الدراسية.");
+            
+            const stdId = Date.now();
+            const generatedCode = "STD-" + Math.floor(1000 + Math.random() * 9000);
 
-            db.students.unshift({
-                id: studentId, name, phone, teacherName: tAssign, courseName, code: studentCode,
-                date: dateStr, totalPrice, paidPrice, ratio
+            db.students.push({
+                id: stdId,
+                code: generatedCode,
+                name,
+                phone,
+                teacherId: tAssign,
+                courseName,
+                totalPrice,
+                ratio,
+                date: new Date().toLocaleDateString('ar-EG')
             });
 
-            if(paidPrice > 0) {
-                db.payments.unshift({ id: 'REC-' + Date.now(), studentId, studentName: name, courseName, amount: paidPrice, date: dateStr, type: "دفعة تسجيل أولى" });
+            if (paidPrice > 0) {
+                db.payments.push({ id: Date.now(), studentId: stdId, amount: paidPrice, date: new Date().toLocaleDateString('ar-EG') });
             }
 
             document.getElementById('adm-s-name').value = "";
             document.getElementById('adm-s-phone').value = "";
             document.getElementById('adm-s-price').value = "";
             document.getElementById('adm-s-paid').value = "";
-            refreshUI(); alert(`🎉 تم القيد بنجاح.\n🔑 كود الدخول الثابت المولد للطالب هو: ${studentCode}`);
+            
+            refreshUI();
+            alert(`🎉 تم بنجاح قيد الطالب وتوليد حسابه المدمج.\n🔑 الكود الذكي الخاص بالطالب هو: ${generatedCode}`);
         }
 
-        function openPaymentModal(id) {
-            const s = db.students.find(student => student.id == id);
+        function updateAdminStudentCourses() {
+            const tId = document.getElementById('adm-s-teacher-assign').value;
+            const courseSelect = document.getElementById('adm-s-course');
+            if(!courseSelect) return;
+            const teacher = db.teachers.find(t => t.id == tId);
+            const filtered = db.courses.filter(c => c.teacher === (teacher ? teacher.name : ''));
+            courseSelect.innerHTML = filtered.map(c => `<option value="${c.title}">${c.title} (${c.days} @ ${c.time})</option>`).join('');
+            if(filtered.length === 0) courseSelect.innerHTML = '<option value="">لا توجد مجموعات مجدولة لهذا الأستاذ</option>';
+        }
+
+        function openEditModal(id) {
+            const s = db.students.find(x => x.id == id);
             if(!s) return;
+            document.getElementById('edit-s-id').value = s.id;
+            document.getElementById('edit-s-name').value = s.name;
+            document.getElementById('edit-s-phone').value = s.phone;
+            
+            const teacher = db.teachers.find(t => t.id == s.teacherId);
+            const filtered = db.courses.filter(c => c.teacher === (teacher ? teacher.name : ''));
+            const cSelect = document.getElementById('edit-s-course');
+            cSelect.innerHTML = filtered.map(c => `<option value="${c.title}">${c.title}</option>`).join('');
+            cSelect.value = s.courseName;
+
+            const modal = document.getElementById('edit-student-modal');
+            modal.classList.remove('hidden'); modal.classList.add('modal-active');
+        }
+
+        function closeEditModal() { const m = document.getElementById('edit-student-modal'); m.classList.add('hidden'); m.classList.remove('modal-active'); }
+
+        function actionUpdateStudent() {
+            const id = document.getElementById('edit-s-id').value;
+            const name = document.getElementById('edit-s-name').value;
+            const phone = document.getElementById('edit-s-phone').value;
+            const crs = document.getElementById('edit-s-course').value;
+            
+            const s = db.students.find(x => x.id == id);
+            if(s) { s.name = name; s.phone = phone; s.courseName = crs; localStorage.setItem('TEACHER_PLATFORM_DB', JSON.stringify(db)); refreshUI(); closeEditModal(); }
+        }
+
+        function openPayModal(id) {
+            const s = db.students.find(x => x.id == id);
+            if(!s) return;
+            const totalPaid = db.payments.filter(p => p.studentId == s.id).reduce((sum, p) => sum + p.amount, 0);
+            
             document.getElementById('pay-s-id').value = s.id;
             document.getElementById('pay-info-name').innerText = s.name;
             document.getElementById('pay-info-total').innerText = s.totalPrice.toLocaleString();
-            document.getElementById('pay-info-paid').innerText = s.paidPrice.toLocaleString();
-            document.getElementById('pay-info-debt').innerText = (s.totalPrice - s.paidPrice).toLocaleString();
+            document.getElementById('pay-info-paid').innerText = totalPaid.toLocaleString();
+            document.getElementById('pay-info-debt').innerText = (s.totalPrice - totalPaid).toLocaleString();
             document.getElementById('pay-amount-input').value = "";
-            
+
             const modal = document.getElementById('pay-modal');
-            modal.style.display = 'flex'; setTimeout(() => modal.classList.add('modal-active'), 10);
+            modal.classList.remove('hidden'); modal.classList.add('modal-active');
         }
 
-        function closePayModal() { document.getElementById('pay-modal').style.display = 'none'; }
+        function closePayModal() { const m = document.getElementById('pay-modal'); m.classList.add('hidden'); m.classList.remove('modal-active'); }
 
         function actionSubmitNewPayment() {
             const id = document.getElementById('pay-s-id').value;
-            const amount = parseFloat(document.getElementById('pay-amount-input').value) || 0;
-            if(amount <= 0) return alert("يرجى إدخال مبلغ صحيح.");
-
-            const index = db.students.findIndex(s => s.id == id);
-            if(index > -1) {
-                const s = db.students[index];
-                if(amount > (s.totalPrice - s.paidPrice)) return alert("المبلغ المدفوع يتجاوز الدين المتبقي بذمة الطالب!");
-                db.students[index].paidPrice += amount;
-                db.payments.unshift({
-                    id: 'REC-' + Date.now(), studentId: s.id, studentName: s.name, courseName: s.courseName,
-                    amount: amount, date: new Date().toLocaleDateString('ar-EG'), type: "تسديد قسط مالي"
-                });
-                closePayModal(); refreshUI(); alert("تم قبض الدفعة المالية وتوليد الوصل الفوري.");
-            }
+            const amt = parseFloat(document.getElementById('pay-amount-input').value) || 0;
+            if(amt <= 0) return alert("يرجى إدخال قيمة صحيحة للدفعة الواصلة.");
+            
+            db.payments.push({ id: Date.now(), studentId: parseInt(id), amount: amt, date: new Date().toLocaleDateString('ar-EG') });
+            refreshUI(); closePayModal(); alert("تم تسجيل السند والقبض المالي بنجاح!");
         }
 
         function actionSubmitExpense() {
             const title = document.getElementById('adm-expense-title').value;
             const amount = parseFloat(document.getElementById('adm-expense-amount').value) || 0;
-            if(!title || amount <= 0) return alert("يرجى مراجعة إدخال المصاريف.");
-            db.expenses.unshift({ id: 'EXP-' + Date.now(), title, amount, date: new Date().toLocaleDateString('ar-EG') });
+            if(!title || amount <= 0) return alert("يرجى كتابة عنوان المصروف وقيمته الحقيقية.");
+            db.expenses.push({ id: Date.now(), title, amount, date: new Date().toLocaleDateString('ar-EG') });
             document.getElementById('adm-expense-title').value = "";
             document.getElementById('adm-expense-amount').value = "";
-            refreshUI(); alert("تم حفظ وقيد المصروف العام بنجاح!");
+            refreshUI(); alert("تم قيد الخصم الإداري من الصندوق بنجاح.");
         }
 
         function actionSubmitTeacherPayment() {
-            const tName = document.getElementById('adm-f-teacher-select').value;
+            const tId = document.getElementById('adm-f-teacher-select').value;
             const amount = parseFloat(document.getElementById('adm-f-teacher-amount').value) || 0;
-            if(!tName || amount <= 0) return alert("يرجى تعيين الأستاذ والقيمة المالية المراد صرفها.");
-            db.teacherPayments.unshift({ id: 'TPAY-' + Date.now(), teacherName: tName, amount, date: new Date().toLocaleDateString('ar-EG') });
+            if(!tId || amount <= 0) return alert("يرجى اختيار الأستاذ وتحديد قيمة الدفعة الصافية له.");
+            db.teacherPayments.push({ id: Date.now(), teacherId: tId, amount, date: new Date().toLocaleDateString('ar-EG') });
             document.getElementById('adm-f-teacher-amount').value = "";
-            refreshUI(); alert(`🖨️ تم صرف قسط ومستند الدفع للأستاذ بقيمة ${amount.toLocaleString()} د.ع بنجاح.`);
+            refreshUI(); alert("تم حفظ دفعة الأستاذ وإصدار القيد الفوري لها.");
         }
 
-        function accessPrimaryTeacherProfile() {
-            if(db.teachers.length === 0) return alert("لا يوجد مدرسين مسجلين متاحين حالياً بالمنصة لتصفح الفصول.");
-            openTeacherProfile(db.teachers[0].id);
+        function deleteStudent(id) {
+            if(confirm("هل أنت متأكد من إلغاء قيد هذا الطالب نهائياً من قاعدة البيانات والسجلات؟")) {
+                db.students = db.students.filter(s => s.id != id);
+                db.payments = db.payments.filter(p => p.studentId != id);
+                refreshUI();
+            }
         }
 
         function openTeacherProfile(id) {
-            const t = db.teachers.find(teacher => teacher.id == id);
+            const t = db.teachers.find(x => x.id == id);
             if(!t) return;
             document.getElementById('tp-name').innerText = t.name;
             document.getElementById('tp-avatar').src = t.img;
@@ -995,413 +1054,363 @@
             const chaptersContainer = document.getElementById('content-chapters');
             chaptersContainer.innerHTML = "";
 
-            if(t.gradeData && t.gradeData["السادس العلمي"]) {
-                const chapters = t.gradeData["السادس العلمي"];
-                for (let chTitle in chapters) {
-                    let lecturesHtml = chapters[chTitle].lectures.map(l => `
+            const grade = "السادس العلمي";
+            if(t.gradeData && t.gradeData[grade]) {
+                for(let chTitle in t.gradeData[grade]) {
+                    const chapter = t.gradeData[grade][chTitle];
+                    let lecturesHtml = chapter.lectures.map(l => `
                         <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <span class="text-xs font-bold text-slate-700">🎬 ${l.num}</span>
-                            <a href="${l.video}" target="_blank" class="text-[10px] bg-sky-600 text-white px-3 py-1 rounded-lg font-bold">مشاهدة الفيديو ↗</a>
+                            <span class="text-xs font-bold text-slate-700">🔹 ${l.num}</span>
+                            <a href="${l.video}" target="_blank" class="text-[10px] font-black text-sky-600 hover:underline">🎥 مشاهدة الحصة المدمجة ←</a>
                         </div>
                     `).join('');
 
-                    let pdfButtonHtml = chapters[chTitle].pdf ? 
-                        `<button onclick="downloadPdfData('${t.id}', '${chTitle}')" class="text-[11px] bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold">📁 تحميل ملزمة الفصل (PDF)</button>` : 
-                        `<span class="text-[10px] text-slate-400 italic">الملزمة غير مرفقة حالياً</span>`;
+                    let pdfBtnHtml = chapter.pdf ? `
+                        <button onclick="downloadChapterPdf('${t.id}', '${chTitle}')" class="text-[10px] bg-sky-600 text-white font-black px-3 py-1 rounded-lg shadow-xs">📥 تحميل ملخص الفصل PDF</button>
+                    ` : `<span class="text-[9px] text-slate-400 italic">الملزمة الخاصة بالفصل قيد الرفع</span>`;
 
                     chaptersContainer.innerHTML += `
-                        <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-xs space-y-4">
+                        <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-sm space-y-3">
                             <div class="flex justify-between items-center border-b border-slate-50 pb-2">
-                                <h3 class="text-base font-black text-slate-800">📂 ${chTitle}</h3>
-                                ${pdfButtonHtml}
+                                <h3 class="font-black text-sm text-slate-800">📁 ${chTitle} (${t.sub})</h3>
+                                ${pdfBtnHtml}
                             </div>
-                            <div class="space-y-2">${lecturesHtml || '<p class="text-[10px] italic text-slate-400 text-center">لا توجد محاضرات منشورة بالفصل</p>'}</div>
+                            <div class="space-y-2">${lecturesHtml || '<p class="text-[10px] text-slate-400 italic">لا توجد محاضرات مرئية مرفوعة حالياً.</p>'}</div>
                         </div>
                     `;
                 }
-            } else {
-                chaptersContainer.innerHTML = `<p class="text-slate-400 text-center italic py-12">لم يقم الأستاذ بنشر أي فصول دراسيّة ومحاضرات بعد.</p>`;
             }
+            if(chaptersContainer.innerHTML === "") {
+                chaptersContainer.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs italic">لا توجد فصول دراسية أو ملازم منشورة للأستاذ حالياً في هذا النطاق.</div>';
+            }
+
             document.getElementById('teacher-profile-view').classList.remove('hidden');
         }
 
         function closeTeacherProfile() { document.getElementById('teacher-profile-view').classList.add('hidden'); }
-
-        function downloadPdfData(tId, chTitle) {
-            const t = db.teachers.find(teacher => teacher.id == tId);
-            if(t && t.gradeData["السادس العلمي"][chTitle].pdf) {
-                const link = document.createElement('a'); link.href = t.gradeData["السادس العلمي"][chTitle].pdf;
-                link.download = `ملزمة_${chTitle}.pdf`; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            }
+        
+        function downloadChapterPdf(tId, chTitle) {
+            const t = db.teachers.find(x => x.id == tId);
+            const pdfData = t.gradeData["السادس العلمي"][chTitle].pdf;
+            const link = document.createElement('a'); link.href = pdfData; link.download = `${chTitle}_${t.name}.pdf`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        function updateAdminStudentCourses() {
-            const tName = document.getElementById('adm-s-teacher-assign').value;
-            const courseSelect = document.getElementById('adm-s-course');
-            const matchedCourses = db.courses.filter(c => c.teacher === tName);
-            if(matchedCourses.length > 0) {
-                courseSelect.innerHTML = matchedCourses.map(c => `<option value="${c.title}">${c.title}</option>`).join('');
-            } else {
-                courseSelect.innerHTML = `<option value="الدورة الإلكترونية العامة">الدورة الإلكترونية العامة</option>`;
-            }
+        function accessPrimaryTeacherProfile() {
+            if(db.teachers.length > 0) openTeacherProfile(db.teachers[0].id);
+            else alert("لم يقم المدير بإدراج أي مدرس في المنصة حتى الآن.");
         }
 
         function askAiAssistant() {
-            const prompt = document.getElementById('ai-prompt-input').value.trim();
-            if(!prompt) return alert("يرجى كتابة منطوق السؤال العلمي أولاً.");
+            const p = document.getElementById('ai-prompt-input').value.trim();
+            if(!p) return;
             const box = document.getElementById('ai-response-box');
             const txt = document.getElementById('ai-response-text');
-            box.classList.remove('hidden'); txt.innerText = "⏳ جاري تحليل المعطيات وتطوير الخطوات التتابعية للحل التربوي المعتمد...";
+            box.classList.remove('hidden'); txt.innerText = "⏳ جاري تحليل وفك شفرات المسألة وتوليد الشرح التربوي التكاملي...";
+            
             setTimeout(() => {
-                txt.innerText = `تحليل السؤال لـ (السادس العلمي): "${prompt}"\n\n💡 التفكيك والمنهجية:\nبناءً على الضوابط الوزارية المعتمدة لمرحلة السادس العلمي، يتطلب هذا النمط عزل المتغيرات أولاً وتطبيق القوانين الفرعية.\n\n📋 خطوات التوجيه والحل:\n١. تحقق من الوحدات الدولية المعطاة (تحويل الوحدات عند الحاجة لضمان دقة التعويض).\n٢. اكتب القانون الأساسي المباشر المرتبط بالفصل الدراسي في ورقتك.\n٣. بعد استخراج الناتج، لا تنسَ كتابة الوحدة القياسية النهائية بدقة لتجنب خصم الدرجات.\n\n🌟 تلميح: مراجعة ملزمة الأستاذ للفصل المرفقة بحسابك ستعطيك أمثلة وزارية مطابقة ومحلولة بالكامل!`;
-            }, 1200);
-        }
+                txt.innerText = `🤖 المساعد العلمي لمنصة الأستاذ (v5.0):
 
-        function actionDeleteStudent(id) {
-            if(confirm("هل تريد حذف هذا الطالب وكافة سجلاته المالية؟")) {
-                db.students = db.students.filter(s => s.id != id); db.payments = db.payments.filter(p => p.studentId != id);
-                refreshUI(); alert("تم المسح بنجاح.");
-            }
+لقد قمت بتحليل طلبك بخصوص مادة السادس العلمي. إليك التفكيك والخطوات العلمية المعتمدة لحل وفهم المسألة بشكل نموذجي في الامتحانات الوزارية:
+
+1️⃣ المفهوم الأساسي: المسألة ترتبط بالارتباط المباشر بالقوانين المبرهنة لهذا الفصل.
+2️⃣ طريقة التفكير: لحل مثل هذه المسائل، يتوجب عزل المتغيرات الأساسية واستخراج المعطيات بدقة قبل التطبيق الرياضي.
+3️⃣ خطوات الحل التفصيلية: يتم التعويض المباشر في العلاقة، مع مراعاة توحيد الوحدات القياسية لتجنب الأخطاء الشائعة التي تسبب خسارة الدرجات.
+
+توصية الأستاذ: ركز على كتابة الوحدات النهائية، وراجع الملاحظات المثبتة في ملزمة الفصل المرفقة بحقيبتك الدراسية!`;
+            }, 1500);
         }
 
         function printStudentCard(id) {
-            const s = db.students.find(student => student.id == id);
+            const s = db.students.find(x => x.id == id);
             if(!s) return;
-            const printArea = document.getElementById('print-card-area');
-            printArea.innerHTML = `
-                <div style="direction: rtl; font-family: 'Cairo', sans-serif; text-align: center; border: 4px solid #0284c7; padding: 25px; border-radius: 25px; width: 85mm; margin: auto; background: white;">
-                    <div style="background: #0284c7; color: white; padding: 10px; border-radius: 15px; font-weight: 900; font-size: 15px; margin-bottom: 12px;">منصة الأستاذ - بطاقة هوية الطالب الكود الذكي</div>
-                    <h3 style="font-size: 14px; font-weight: 900; color: #1e293b; margin: 5px 0;">الطالب: ${s.name}</h3>
-                    <p style="font-size: 11px; font-weight: bold; color: #64748b; margin: 3px 0;">الصف: السادس العلمي</p>
-                    <p style="font-size: 12px; font-weight: bold; color: #0284c7; margin: 3px 0;">كود الدخول الثابت: ${s.code}</p>
-                    <p style="font-size: 10px; font-weight: bold; color: #475569; margin: 3px 0;">المجموعة الدراسية: ${s.courseName}</p>
-                    <div id="print-qrcode-container" style="display: flex; justify-content: center; margin: 15px 0;"></div>
-                    <p style="font-size: 9px; color: #94a3b8; font-weight: bold;">يرجى إبراز الكود دائماً لتأكيد الحضور التلقائي بالمقر والمنصة</p>
-                </div>
-            `;
-            new QRCode(document.getElementById("print-qrcode-container"), { text: s.code, width: 100, height: 100, colorDark : "#0284c7", colorLight : "#ffffff" });
-            setTimeout(() => { window.print(); }, 400);
-        }
-
-        function printPaymentReceipt(id) {
-            const p = db.payments.find(pay => pay.id === id);
-            if(!p) return alert("الوصول المالي غير متوفر.");
-            const printArea = document.getElementById('print-card-area');
-            printArea.innerHTML = `
-                <div style="direction: rtl; font-family: 'Cairo', sans-serif; border: 2px dashed #000; padding: 20mm; width: 210mm; background: white; box-sizing: border-box;">
-                    <div style="text-align: center; margin-bottom: 25px;">
-                        <h1 style="font-size: 24px; font-weight: 900; margin: 0 0 5px 0;">منصة الأستاذ - السادس العلمي</h1>
-                        <p style="font-size: 14px; color: #555; margin: 0;">مستند ووصل قبض مالي للطلاب والأقساط الدراسية</p>
+            const t = db.teachers.find(x => x.id == s.teacherId);
+            const area = document.getElementById('print-card-area');
+            
+            area.innerHTML = `
+                <div style="width: 85mm; height: 55mm; border: 2px solid #0284c7; border-radius: 15px; padding: 10px; position: relative; font-family: 'Cairo', sans-serif; background: #fff; direction: rtl;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; border-b: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
+                        <span style="font-size: 10px; font-weight: 900; color: #0284c7;">🎓 منصة الأستاذ التعليمية</span>
+                        <span style="font-size: 8px; font-weight: bold; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 20px;">السادس العلمي</span>
                     </div>
-                    <hr style="border: 1px dashed #000; margin-bottom: 25px;">
-                    <div style="font-size: 16px; line-height: 2.2; margin-bottom: 35px;">
-                        <p><b>رقم الفاتورة المرجعي:</b> ${p.id}</p>
-                        <p><b>تاريخ الحركة المالية:</b> ${p.date}</p>
-                        <p><b>نوع المقبوضات المستلمة:</b> <span style="background: #eee; padding: 2px 8px; border-radius: 5px;">${p.type}</span></p>
-                        <p><b>وصلنا من الطالب الثلاثي:</b> ${p.studentName}</p>
-                        <p><b>المجموعة التدريسية المسجلة:</b> ${p.courseName}</p>
-                        <p><b>المبلغ المقبوض نقداً:</b> <span style="font-size: 19px; font-weight: 900; text-decoration: underline;">${p.amount.toLocaleString()} دينار عراقي لا غير</span></p>
+                    <div style="display: flex; gap: 10px;">
+                        <div id="print-qrcode-box" style="margin-top: 4px;"></div>
+                        <div style="font-size: 10px; display: flex; flex-direction: column; gap: 3px; color: #334155; flex: 1;">
+                            <p style="margin:0;"><b>الاسم:</b> <span style="color:#0f172a; font-weight: bold;">${s.name}</span></p>
+                            <p style="margin:0;"><b>الهاتف:</b> ${s.phone}</p>
+                            <p style="margin:0;"><b>المجموعة:</b> ${s.courseName}</p>
+                            <p style="margin:0;"><b>الأستاذ:</b> ${t ? t.name : 'عام'}</p>
+                            <p style="margin:0; font-size: 11px; font-weight: 900; color:#0284c7; letter-spacing: 1px; margin-top: 2px;">كود الدخول: ${s.code}</p>
+                        </div>
                     </div>
-                    <div style="margin-top: 60px; display: flex; justify-content: space-between; font-size: 14px; font-weight: bold;">
-                        <div style="text-align: center; width: 45%;">أمين الصندوق واستلام الحسابات:<br><br>_____________________</div>
-                        <div style="text-align: center; width: 45%;">توقيع الطالب أو ولي الأمر:<br><br>_____________________</div>
+                    <div style="position: absolute; bottom: 6px; left: 10px; right: 10px; text-align: center; font-size: 7px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 4px;">
+                        تعتبر هذه الهوية رسمية وبوابة لدخول الحصص الذكية والاختبارات المدمجة لعام ٢٠٢٦
                     </div>
                 </div>
             `;
+            
+            new QRCode(document.getElementById("print-qrcode-box"), { text: s.code, width: 65, height: 65, correctLevel: QRCode.CorrectLevel.H });
             setTimeout(() => { window.print(); }, 400);
         }
 
         function printFinancialReport() {
-            const monthFilter = document.getElementById('fin-filter-month').value;
-            let totalIn = 0; let totalExpenses = 0; let totalTeacherPaid = 0; let totalDebt = 0;
+            const area = document.getElementById('print-card-area');
+            let rowsHtml = db.teachers.map(t => {
+                let calc = calculateTeacherFinancials(t.id);
+                return `<tr><td>${t.name}</td><td>${t.sub}</td><td>${calc.studentsCount}</td><td>${calc.totalIn.toLocaleString()} د.ع</td><td>${calc.teacherShare.toLocaleString()} د.ع</td><td>${calc.paidToTeacher.toLocaleString()} د.ع</td><td>${calc.remainingToTeacher.toLocaleString()} د.ع</td></tr>`;
+            }).join('');
 
-            db.payments.filter(p => monthFilter === "كل الأشهر" || p.date.includes(monthFilter)).forEach(p => totalIn += p.amount);
-            db.expenses.filter(e => monthFilter === "كل الأشهر" || e.date.includes(monthFilter)).forEach(e => totalExpenses += e.amount);
-            db.teacherPayments.filter(tp => monthFilter === "كل الأشهر" || tp.date.includes(monthFilter)).forEach(tp => totalTeacherPaid += tp.amount);
-            db.students.forEach(s => totalDebt += (s.totalPrice - s.paidPrice));
-
-            const printArea = document.getElementById('print-card-area');
-            printArea.innerHTML = `
-                <div style="direction: rtl; font-family: 'Cairo', sans-serif; padding: 15mm; width: 210mm; background: white; box-sizing: border-box; border: 1px solid #000;">
-                    <h1 style="text-align: center; font-size: 22px; font-weight: 900;">تقرير الموقف المالي وكشف الأرباح الشامل لعام 2026</h1>
-                    <p style="text-align: center; font-size: 12px; color: #666;">فلترة التقرير الحالي: ${monthFilter}</p>
-                    <hr style="margin: 20px 0;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 14px; line-height: 2;">
-                        <tr style="background: #f4f4f5;"><th style="padding: 8px; border: 1px solid #ddd;">البند المالي الحسابي</th><th style="padding: 8px; border: 1px solid #ddd;">القيمة الماليّة المسجلة</th></tr>
-                        <tr><td style="padding: 8px; border: 1px solid #ddd;">إجمالي المقبوضات والواردات النقدية من الطلاب</td><td style="padding: 8px; border: 1px solid #ddd; color: green; font-weight: bold;">${totalIn.toLocaleString()} د.ع</td></tr>
-                        <tr><td style="padding: 8px; border: 1px solid #ddd;">الأقساط والدين المتبقي بذمة طلاب السادس العلمي</td><td style="padding: 8px; border: 1px solid #ddd; color: red;">${totalDebt.toLocaleString()} د.ع</td></tr>
-                        <tr><td style="padding: 8px; border: 1px solid #ddd;">إجمالي المصاريف والمدفوعات التشغيلية الإدارية العامة</td><td style="padding: 8px; border: 1px solid #ddd;">${totalExpenses.toLocaleString()} د.ع</td></tr>
-                        <tr><td style="padding: 8px; border: 1px solid #ddd;">المبالغ والأقساط المسلمة والمصروفة للأساتذة فعلياً</td><td style="padding: 8px; border: 1px solid #ddd;">${totalTeacherPaid.toLocaleString()} د.ع</td></tr>
-                        <tr style="background: #eff6ff; font-weight: 900;"><td style="padding: 8px; border: 1px solid #ddd;">صافي الأرباح المتبقية لإدارة المنصة</td><td style="padding: 8px; border: 1px solid #ddd; color: #0284c7; font-size: 16px;">${(totalIn - totalExpenses - totalTeacherPaid).toLocaleString()} دينار عراقي</td></tr>
+            area.innerHTML = `
+                <div style="direction: rtl; font-family: 'Cairo', sans-serif; padding: 10mm;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h1 style="font-size: 20px; font-weight: 900; margin: 0; color: #1e293b;">منصة الأستاذ التعليمية المركزية</h1>
+                        <p style="font-size: 11px; font-weight: bold; color: #64748b; margin: 4px 0;">كشف الأرباح الختامي وتوزيع مستحقات الأساتذة لعام ٢٠٢٦</p>
+                    </div>
+                    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center;">
+                        <thead style="background: #f1f5f9; font-weight: bold;">
+                            <tr><th>اسم الأستاذ</th><th>المادة</th><th>عدد الطلاب</th><th>المقبوض الإجمالي</th><th>حصة الأستاذ الكلية</th><th>المصروف له سابقاً</th><th>المتبقي له في الذمة</th></tr>
+                        </thead>
+                        <tbody>${rowsHtml || '<tr><td colspan="7">لا توجد سجلات مالية حتى الآن</td></tr>'}</tbody>
                     </table>
-                    <p style="margin-top: 40px; font-size: 11px; text-align: center; color: #aaa;">منظومة التدقيق المالي المؤتمتة ومنصة الأستاذ v5.0</p>
                 </div>
             `;
             setTimeout(() => { window.print(); }, 400);
         }
 
-        // ==========================================
-        // الدالة المسؤولة عن تحديث كامل الواجهة وتوليد المدرسين
-        // ==========================================
-        function refreshUI() {
-            localStorage.setItem('TEACHER_PLATFORM_DB', JSON.stringify(db));
+        function calculateTeacherFinancials(teacherId) {
+            const teacher = db.teachers.find(t => t.id == teacherId);
+            if(!teacher) return { studentsCount: 0, totalIn: 0, teacherShare: 0, platformShare: 0, paidToTeacher: 0, remainingToTeacher: 0 };
             
-            // تحديث الإحصائيات
-            document.getElementById('stat-teachers').innerText = db.teachers.length;
-            document.getElementById('stat-students').innerText = db.students.length;
-            document.getElementById('stat-courses').innerText = db.courses.length;
+            const stds = db.students.filter(s => s.teacherId == teacherId);
+            let totalIn = 0;
+            let teacherShare = 0;
+            let platformShare = 0;
 
-            // 1. توليد بطاقات المواد في الشاشة الرئيسية (تطبيق الربط المباشر بالمدرس)
-            const subjectsContainer = document.getElementById('home-subjects-container');
-            if (subjectsContainer) {
-                subjectsContainer.innerHTML = subjectsConfig.map(sub => {
-                    // البحث عن مدرس لهذه المادة في قاعدة البيانات
-                    const teacher = db.teachers.find(t => t.sub === sub.name);
-                    const teacherName = teacher ? teacher.name : 'غير محدد';
-                    // إضافة زر (محتوى ومحاضرات الأستاذ) إذا كان هناك مدرس مسجل لهذه المادة
-                    const teacherBtnHtml = teacher ? 
-                        `<button onclick="openTeacherProfile('${teacher.id}'); event.stopPropagation();" class="text-[9px] bg-white/20 px-2 py-1 rounded-lg font-bold hover:bg-white/30 transition-all cursor-pointer">محاضرات الأستاذ</button>` : '';
+            stds.forEach(s => {
+                const paid = db.payments.filter(p => p.studentId == s.id).reduce((sum, p) => sum + p.amount, 0);
+                totalIn += paid;
+                teacherShare += paid * (s.ratio / 100);
+                platformShare += paid * ((100 - s.ratio) / 100);
+            });
 
-                    return `
-                    <div onclick="openSubjectFolder('${sub.name}')" class="bg-gradient-to-br ${sub.gradient} p-4 rounded-3xl text-white shadow-md cursor-pointer hover:scale-[1.02] active:scale-95 transition-all space-y-3 relative">
-                        <div class="flex justify-between items-start">
-                            <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl">${sub.icon}</div>
-                            ${teacherBtnHtml}
-                        </div>
+            const paidToTeacher = db.teacherPayments.filter(p => p.teacherId == teacherId).reduce((sum, p) => sum + p.amount, 0);
+            return {
+                studentsCount: stds.length,
+                totalIn,
+                teacherShare,
+                platformShare,
+                paidToTeacher,
+                remainingToTeacher: teacherShare - paidToTeacher
+            };
+        }
+
+        function refreshFinancialsView() {
+            const mFilter = document.getElementById('fin-filter-month').value;
+            let totalIn = 0;
+            let totalTeacherShare = 0;
+            let platformGross = 0;
+
+            db.students.forEach(s => {
+                let payments = db.payments.filter(p => p.studentId == s.id);
+                if (mFilter !== "كل الأشهر") payments = payments.filter(p => p.date.includes(mFilter));
+                
+                const paid = payments.reduce((sum, p) => sum + p.amount, 0);
+                totalIn += paid;
+                totalTeacherShare += paid * (s.ratio / 100);
+                platformGross += paid * ((100 - s.ratio) / 100);
+            });
+
+            let expenses = db.expenses;
+            if(mFilter !== "كل الأشهر") expenses = expenses.filter(e => e.date.includes(mFilter));
+            const totalExp = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+            let tPayments = db.teacherPayments;
+            if(mFilter !== "كل الأشهر") tPayments = tPayments.filter(p => p.date.includes(mFilter));
+            const totalTPaid = tPayments.reduce((sum, p) => sum + p.amount, 0);
+
+            let totalDebt = 0;
+            db.students.forEach(s => {
+                const paid = db.payments.filter(p => p.studentId == s.id).reduce((sum, p) => sum + p.amount, 0);
+                totalDebt += (s.totalPrice - paid);
+            });
+
+            // تحديث واجهة أرقام الصندوق الإجمالية والنسبية
+            document.getElementById('fin-total-in').innerText = totalIn.toLocaleString() + " د.ع";
+            document.getElementById('fin-total-debt').innerText = totalDebt.toLocaleString() + " د.ع";
+            document.getElementById('fin-total-expenses').innerText = totalExp.toLocaleString() + " د.ع";
+            document.getElementById('fin-total-teacher-paid').innerText = totalTPaid.toLocaleString() + " د.ع";
+            
+            // صافي ربح المنصة = (حصة المنصة الإجمالية من المقبوضات) - المصاريف العامة
+            const netProfit = platformGross - totalExp;
+            document.getElementById('fin-net-profit').innerText = netProfit.toLocaleString() + " د.ع";
+
+            // بناء القائمة الحسابية التلقائية لكل أستاذ داخل التبويب المالي
+            const calculatedList = document.getElementById('fin-teachers-calculated-list');
+            calculatedList.innerHTML = db.teachers.map(t => {
+                const calc = calculateTeacherFinancials(t.id);
+                return `
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
                         <div>
-                            <h4 class="text-xs font-black">${sub.name}</h4>
-                            <p class="text-[9px] opacity-90 font-bold mt-0.5">👨‍🏫 الأستاذ: ${teacherName}</p>
+                            <p class="font-black text-slate-800">${t.name} (${t.sub})</p>
+                            <p class="text-[10px] text-slate-500">الحصة المستحقة: ${calc.teacherShare.toLocaleString()} د.ع | المستلمة: ${calc.paidToTeacher.toLocaleString()} د.ع</p>
+                        </div>
+                        <div class="text-left">
+                            <span class="px-2.5 py-1 rounded-lg text-[10px] font-black ${calc.remainingToTeacher > 0 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}">
+                                المتبقي: ${calc.remainingToTeacher.toLocaleString()} د.ع
+                            </span>
                         </div>
                     </div>
-                    `;
-                }).join('');
+                `;
+            }).join('');
+            if(db.teachers.length === 0) calculatedList.innerHTML = '<p class="text-slate-400 italic text-center">لا يوجد أساتذة مسجلين لاحتساب نسبهم الحالية.</p>';
+
+            // تحديث سجل المصاريف العامة
+            document.getElementById('fin-expenses-list').innerHTML = expenses.map(e => `
+                <div class="flex justify-between border-b border-slate-100 py-1 text-[11px]">
+                    <span class="text-slate-600">▪️ ${e.title}</span>
+                    <span class="font-bold text-rose-600">${e.amount.toLocaleString()} د.ع (${e.date})</span>
+                </div>
+            `).join('') || '<p class="text-slate-400 italic text-center py-2">لا توجد مصاريف مقيدة.</p>';
+
+            // تحديث سجل دفعات الأساتذة
+            document.getElementById('fin-teacher-receipts-list').innerHTML = tPayments.map(p => {
+                const teacher = db.teachers.find(t => t.id == p.teacherId);
+                return `
+                    <div class="flex justify-between border-b border-slate-100 py-1 text-[11px]">
+                        <span class="text-slate-600">▪️ ${teacher ? teacher.name : 'مدرس محذوف'}</span>
+                        <span class="font-bold text-purple-600">${p.amount.toLocaleString()} د.ع (${p.date})</span>
+                    </div>
+                `;
+            }).join('') || '<p class="text-slate-400 italic text-center py-2">لا توجد دفعات مصروفة حالياً.</p>';
+        }
+
+        function refreshStudentsList() {
+            const container = document.getElementById('students-list');
+            if(!container) return;
+            const search = document.getElementById('student-search-input').value.toLowerCase().trim();
+
+            const filteredStudents = db.students.filter(s => s.name.toLowerCase().includes(search));
+
+            container.innerHTML = filteredStudents.map(s => {
+                const totalPaid = db.payments.filter(p => p.studentId == s.id).reduce((sum, p) => sum + p.amount, 0);
+                const debt = s.totalPrice - totalPaid;
+                const teacher = db.teachers.find(t => t.id == s.teacherId);
+
+                return `
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 shadow-xs">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-black text-xs text-slate-800">${s.name}</h4>
+                                <p class="text-[9px] text-slate-400 font-bold">📱 ${s.phone} | 🏢 المجموعة: ${s.courseName}</p>
+                                <p class="text-[9px] text-sky-600 font-bold">👨‍🏫 الأستاذ المتابع: ${teacher ? teacher.name : 'عام'}</p>
+                            </div>
+                            <span class="bg-sky-100 text-sky-700 text-[10px] px-2.5 py-0.5 rounded-md font-black tracking-wider">${s.code}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1.5 bg-white p-2 rounded-xl text-center text-[10px] border border-slate-100">
+                            <div><p class="text-slate-400 font-bold">القسط الكلي</p><p class="font-black text-slate-700">${s.totalPrice.toLocaleString()}</p></div>
+                            <div><p class="text-slate-400 font-bold">الواصل</p><p class="font-black text-emerald-600">${totalPaid.toLocaleString()}</p></div>
+                            <div><p class="text-slate-400 font-bold">المتبقي</p><p class="font-black ${debt > 0 ? 'text-rose-600' : 'text-slate-500'}">${debt.toLocaleString()}</p></div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="openPayModal('${s.id}')" class="flex-1 bg-emerald-600 text-white font-black text-[10px] py-1.5 rounded-lg shadow-xs cursor-pointer">💵 قيد دفعة</button>
+                            <button onclick="printStudentCard('${s.id}')" class="bg-sky-600 text-white font-black text-[10px] px-3 py-1.5 rounded-lg shadow-xs cursor-pointer">🖨️ الهوية</button>
+                            <button onclick="openEditModal('${s.id}')" class="bg-amber-500 text-white font-black text-[10px] px-2.5 py-1.5 rounded-lg shadow-xs cursor-pointer">✏️</button>
+                            <button onclick="deleteStudent('${s.id}')" class="bg-rose-600 text-white font-black text-[10px] px-2.5 py-1.5 rounded-lg shadow-xs cursor-pointer">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if(filteredStudents.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-xs italic text-center py-4">لا يوجد طلاب متطابقين مع البحث.</p>';
+            }
+        }
+
+        function refreshUI() {
+            localStorage.setItem('TEACHER_PLATFORM_DB', JSON.stringify(db));
+
+            // تحديث الإحصائيات المركزية بالإدارة
+            if(document.getElementById('stat-teachers')) document.getElementById('stat-teachers').innerText = db.teachers.length;
+            if(document.getElementById('stat-students')) document.getElementById('stat-students').innerText = db.students.length;
+            if(document.getElementById('stat-courses')) document.getElementById('stat-courses').innerText = db.courses.length;
+
+            // تحديث قوائم الاختيارات (Select Boxes) بالإدارة
+            const selectTeacherAdmin = document.getElementById('adm-c-select-t');
+            if(selectTeacherAdmin) selectTeacherAdmin.innerHTML = db.teachers.map(t => `<option value="${t.id}">${t.name} (${t.sub})</option>`).join('');
+            
+            const selectTeacherAssign = document.getElementById('adm-s-teacher-assign');
+            if(selectTeacherAssign) {
+                selectTeacherAssign.innerHTML = db.teachers.map(t => `<option value="${t.id}">${t.name} (${t.sub})</option>`).join('');
+                if(db.teachers.length > 0 && !selectTeacherAssign.dataset.init) {
+                    selectTeacherAssign.dataset.init = "true";
+                    updateAdminStudentCourses();
+                }
             }
 
-            // تحديث القوائم المنسدلة في لوحة الإدارة
-            const selectT1 = document.getElementById('adm-c-select-t');
-            const selectT2 = document.getElementById('adm-co-teacher');
-            const selectT3 = document.getElementById('adm-s-teacher-assign');
-            const selectT4 = document.getElementById('adm-f-teacher-select');
-            
-            const teachersOptions = db.teachers.map(t => `<option value="${t.name}">${t.name} (${t.sub})</option>`).join('');
-            const teachersIdsOptions = db.teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-            
-            if(selectT1) selectT1.innerHTML = teachersIdsOptions || `<option value="">لا يوجد مدرسين مضافين</option>`;
-            if(selectT2) selectT2.innerHTML = teachersOptions || `<option value="">لا يوجد مدرسين</option>`;
-            if(selectT3) { selectT3.innerHTML = teachersOptions || `<option value="">لا يوجد مدرسين</option>`; updateAdminStudentCourses(); }
-            if(selectT4) selectT4.innerHTML = teachersOptions || `<option value="">لا يوجد مدرسين</option>`;
+            const selectTeacherFinance = document.getElementById('adm-f-teacher-select');
+            if(selectTeacherFinance) selectTeacherFinance.innerHTML = db.teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
 
-            const hwCourseSelect = document.getElementById('adm-hw-course');
-            if(hwCourseSelect) hwCourseSelect.innerHTML = db.courses.map(c => `<option value="${c.title}">${c.title}</option>`).join('') || `<option value="">لا توجد مجموعات مجدولة</option>`;
+            const selectCourseHomework = document.getElementById('adm-hw-course');
+            if(selectCourseHomework) selectCourseHomework.innerHTML = db.courses.map(c => `<option value="${c.title}">${c.title} - ${c.teacher}</option>`).join('');
 
-            // تحديث جداول الدورات
+            // تحديث المظهر الخارجي لحقيبة المواد الدراسية الستة بالرئيسية
+            const subjectsContainer = document.getElementById('home-subjects-container');
+            if(subjectsContainer) {
+                subjectsContainer.innerHTML = subjectsConfig.map(sub => `
+                    <div onclick="openSubjectFolder('${sub.name}')" class="bg-gradient-to-br ${sub.gradient} p-4 rounded-[2rem] text-white shadow-md cursor-pointer transform hover:scale-[1.02] transition-all relative overflow-hidden group">
+                        <div class="absolute -right-2 -bottom-2 text-5xl opacity-15 group-hover:scale-110 transition-all">${sub.icon}</div>
+                        <div class="text-xl mb-1">${sub.icon}</div>
+                        <h4 class="text-xs font-black">${sub.name}</h4>
+                        <p class="text-[9px] opacity-80 font-bold">الملف والواجب الذكي ←</p>
+                    </div>
+                `).join('');
+            }
+
+            // تحديث عرض جداول الحصص والواجبات للطلاب
+            const role = sessionStorage.getItem('CURRENT_USER_ROLE');
+            const userCode = sessionStorage.getItem('STUDENT_USER_CODE');
+            const student = db.students.find(s => s.code === userCode);
+
             const coursesContainer = document.getElementById('courses-list-container');
             if(coursesContainer) {
-                if(db.courses.length > 0) {
-                    coursesContainer.innerHTML = db.courses.map(c => `
-                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex justify-between items-center">
-                            <div>
-                                <h4 class="text-xs font-black text-slate-800">${c.title}</h4>
-                                <p class="text-[10px] text-slate-500 font-bold">الأستاذ: ${c.teacher} | الأيام: ${c.days}</p>
-                            </div>
-                            <span class="text-[10px] bg-amber-100 text-amber-700 px-2.5 py-1 rounded-lg font-black">⏰ ${c.time}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    coursesContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-2 col-span-full">لا توجد مجموعات دراسية حضورية مضافة حالياً.</p>`;
+                let currentCourses = db.courses;
+                if(role === 'student' && student) {
+                    currentCourses = db.courses.filter(c => c.title === student.courseName);
                 }
+                coursesContainer.innerHTML = currentCourses.map(c => `
+                    <div class="bg-white p-4 rounded-3xl border border-slate-100 shadow-xs flex justify-between items-center">
+                        <div class="space-y-1">
+                            <span class="bg-indigo-50 text-indigo-600 text-[9px] px-2.5 py-0.5 rounded-full font-black">🗓️ النطاق النشط</span>
+                            <h4 class="font-black text-xs text-slate-800">${c.title}</h4>
+                            <p class="text-[9px] text-slate-400 font-bold">الأيام: ${c.days} | التوقيت: ${c.time} (المدة: ${c.duration} س)</p>
+                        </div>
+                        <div class="text-left"><p class="text-xs font-black text-slate-700">👨‍🏫 ${c.teacher}</p></div>
+                    </div>
+                `).join('');
+                if(currentCourses.length === 0) coursesContainer.innerHTML = '<p class="text-slate-400 text-xs italic text-center py-2">لا توجد قاعات أو مجموعات دراسية مضافة.</p>';
             }
 
-            // تحديث الواجبات
-            const hwContainer = document.getElementById('student-homeworks-container');
-            if(hwContainer) {
-                if(db.homeworks.length > 0) {
-                    hwContainer.innerHTML = db.homeworks.map(h => `
-                        <div class="bg-amber-50/40 border border-amber-100 p-4 rounded-2xl space-y-1">
-                            <div class="flex justify-between text-[10px] font-black text-amber-700"><span>📚 ${h.courseName}</span><span>🗓️ ${h.date}</span></div>
-                            <h4 class="text-xs font-black text-slate-800">${h.title}</h4>
-                            <p class="text-[10px] text-slate-600 font-bold leading-relaxed">${h.desc || 'لا توجد تفاصيل إضافية.'}</p>
-                        </div>
-                    `).join('');
-                } else {
-                    hwContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-4">لا توجد واجبات معلنة حالياً لدوراتك.</p>`;
+            const homeworksContainer = document.getElementById('student-homeworks-container');
+            if(homeworksContainer) {
+                let currentHw = db.homeworks;
+                if(role === 'student' && student) {
+                    currentHw = db.homeworks.filter(h => h.courseName === student.courseName);
                 }
+                homeworksContainer.innerHTML = currentHw.map(h => `
+                    <div class="p-4 bg-amber-50/40 border border-amber-100 rounded-3xl space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-black text-xs text-amber-900">📝 ${h.title}</h4>
+                            <span class="text-[9px] text-slate-400 font-bold">📅 تاريخ النشر: ${h.date}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600 leading-relaxed font-bold">${h.desc}</p>
+                        <div class="pt-1 text-[9px] text-indigo-600 font-bold">📌 المجموعة المستهدفة: ${h.courseName}</div>
+                    </div>
+                `).join('');
+                if(currentHw.length === 0) homeworksContainer.innerHTML = '<p class="text-slate-400 text-xs italic text-center py-4">لا توجد واجبات معلنة حالياً.</p>';
             }
 
             refreshStudentsList();
             refreshFinancialsView();
-        }
-
-        // --- دوال تحديث القوائم والبحث (شؤون الطلاب) ---
-        function refreshStudentsList() {
-            const listContainer = document.getElementById('students-list');
-            if(!listContainer) return;
-            
-            const searchQuery = document.getElementById('student-search-input')?.value.trim() || "";
-            let filteredStudents = db.students;
-            
-            if(searchQuery) {
-                filteredStudents = filteredStudents.filter(s => s.name.includes(searchQuery));
-            }
-            
-            if(filteredStudents.length > 0) {
-                listContainer.innerHTML = filteredStudents.map(s => `
-                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-3">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="text-xs font-black text-slate-800">${s.name}</h4>
-                                <p class="text-[10px] text-slate-500 font-bold mt-0.5">المجموعة: ${s.courseName}</p>
-                                <p class="text-[10px] font-bold text-sky-600 mt-0.5">كود: ${s.code}</p>
-                            </div>
-                            <div class="text-left space-y-1 bg-slate-50 p-2 rounded-xl border border-slate-100">
-                                <p class="text-[9px] font-black text-emerald-600">مسدد: ${s.paidPrice.toLocaleString()}</p>
-                                <p class="text-[9px] font-black text-rose-600">متبقي: ${(s.totalPrice - s.paidPrice).toLocaleString()}</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-2 border-t border-slate-50 pt-3">
-                            <button onclick="openPaymentModal('${s.id}')" class="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-2 rounded-xl text-[10px] font-black transition-colors">💵 دفع</button>
-                            <button onclick="openEditModal('${s.id}')" class="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-700 py-2 rounded-xl text-[10px] font-black transition-colors">✏️ تعديل</button>
-                            <button onclick="printStudentCard('${s.id}')" class="flex-1 bg-sky-50 hover:bg-sky-100 text-sky-700 py-2 rounded-xl text-[10px] font-black transition-colors">🖨️ هوية</button>
-                            <button onclick="actionDeleteStudent('${s.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-2 rounded-xl text-[10px] font-black transition-colors">🗑️</button>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                listContainer.innerHTML = `<p class="text-center text-slate-400 text-xs font-bold py-6">لا يوجد طلاب مسجلين أو مطابقين للبحث.</p>`;
-            }
-        }
-
-        // --- دوال العرض المالي والتقارير ---
-        function refreshFinancialsView() {
-            const monthFilter = document.getElementById('fin-filter-month')?.value || "كل الأشهر";
-            
-            let totalIn = 0; 
-            let totalExpenses = 0; 
-            let totalTeacherPaid = 0; 
-            let totalDebt = 0;
-
-            const fPayments = db.payments.filter(p => monthFilter === "كل الأشهر" || p.date.includes(monthFilter));
-            fPayments.forEach(p => totalIn += p.amount);
-
-            const fExpenses = db.expenses.filter(e => monthFilter === "كل الأشهر" || e.date.includes(monthFilter));
-            fExpenses.forEach(e => totalExpenses += e.amount);
-
-            const fTeacherPayments = db.teacherPayments.filter(tp => monthFilter === "كل الأشهر" || tp.date.includes(monthFilter));
-            fTeacherPayments.forEach(tp => totalTeacherPaid += tp.amount);
-
-            db.students.forEach(s => totalDebt += (s.totalPrice - s.paidPrice));
-
-            if(document.getElementById('fin-total-in')) document.getElementById('fin-total-in').innerText = totalIn.toLocaleString() + " د.ع";
-            if(document.getElementById('fin-total-debt')) document.getElementById('fin-total-debt').innerText = totalDebt.toLocaleString() + " د.ع";
-            if(document.getElementById('fin-total-expenses')) document.getElementById('fin-total-expenses').innerText = totalExpenses.toLocaleString() + " د.ع";
-            if(document.getElementById('fin-total-teacher-paid')) document.getElementById('fin-total-teacher-paid').innerText = totalTeacherPaid.toLocaleString() + " د.ع";
-            if(document.getElementById('fin-net-profit')) document.getElementById('fin-net-profit').innerText = (totalIn - totalExpenses - totalTeacherPaid).toLocaleString() + " د.ع";
-
-            const tCalcList = document.getElementById('fin-teachers-calculated-list');
-            if(tCalcList) {
-                if(db.teachers.length > 0) {
-                    let calcHtml = "";
-                    db.teachers.forEach(t => {
-                        let tStudents = db.students.filter(s => s.teacherName === t.name);
-                        let tTotalRevenue = 0;
-                        tStudents.forEach(s => {
-                            let sPayments = db.payments.filter(p => p.studentId === s.id && (monthFilter === "كل الأشهر" || p.date.includes(monthFilter)));
-                            let sPaid = sPayments.reduce((sum, p) => sum + p.amount, 0);
-                            tTotalRevenue += (sPaid * (s.ratio / 100));
-                        });
-                        
-                        let tPaidAlready = db.teacherPayments
-                            .filter(tp => tp.teacherName === t.name && (monthFilter === "كل الأشهر" || tp.date.includes(monthFilter)))
-                            .reduce((sum, tp) => sum + tp.amount, 0);
-                        
-                        let tRemaining = tTotalRevenue - tPaidAlready;
-                        
-                        calcHtml += `
-                            <div class="bg-purple-50 p-3 rounded-2xl border border-purple-100 flex justify-between items-center shadow-sm">
-                                <div>
-                                    <p class="text-xs font-black text-slate-800">${t.name}</p>
-                                    <p class="text-[9px] text-slate-500 font-bold mt-1">المستحق الكلي: ${tTotalRevenue.toLocaleString()} | المستلم: ${tPaidAlready.toLocaleString()}</p>
-                                </div>
-                                <div class="text-left bg-white p-2 rounded-xl border border-purple-100">
-                                    <p class="text-[9px] font-bold text-purple-700">المتبقي له:</p>
-                                    <p class="text-[11px] font-black ${tRemaining > 0 ? 'text-rose-600' : 'text-emerald-600'}">${tRemaining.toLocaleString()} د.ع</p>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    tCalcList.innerHTML = calcHtml;
-                } else {
-                    tCalcList.innerHTML = `<p class="text-slate-400 italic text-center py-4 text-xs">لا يوجد أساتذة مضافين لتمثيل الحسابات</p>`;
-                }
-            }
-
-            const expList = document.getElementById('fin-expenses-list');
-            if(expList) {
-                expList.innerHTML = fExpenses.length > 0 ? fExpenses.map(e => `
-                    <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                        <div>
-                            <span class="font-black text-slate-700 text-[10px]">${e.title}</span> 
-                            <p class="text-[8px] text-slate-400 font-bold">${e.date}</p>
-                        </div>
-                        <span class="font-black text-[11px] text-amber-600">${e.amount.toLocaleString()}</span>
-                    </div>
-                `).join('') : '<p class="text-slate-400 italic text-center py-2 text-[10px]">لا توجد مصاريف مقيدة</p>';
-            }
-
-            const tRecList = document.getElementById('fin-teacher-receipts-list');
-            if(tRecList) {
-                tRecList.innerHTML = fTeacherPayments.length > 0 ? fTeacherPayments.map(tp => `
-                    <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                        <div>
-                            <span class="font-black text-slate-700 text-[10px]">${tp.teacherName}</span> 
-                            <p class="text-[8px] text-slate-400 font-bold">${tp.date}</p>
-                        </div>
-                        <span class="font-black text-[11px] text-purple-600">${tp.amount.toLocaleString()}</span>
-                    </div>
-                `).join('') : '<p class="text-slate-400 italic text-center py-2 text-[10px]">لا توجد دفعات مصرفية للأساتذة</p>';
-            }
-        }
-
-        function openEditModal(id) {
-            const s = db.students.find(student => student.id == id);
-            if(!s) return;
-            document.getElementById('edit-s-id').value = s.id;
-            document.getElementById('edit-s-name').value = s.name;
-            document.getElementById('edit-s-phone').value = s.phone;
-            
-            const editCourseSelect = document.getElementById('edit-s-course');
-            if(db.courses.length > 0) {
-                editCourseSelect.innerHTML = db.courses.map(c => `<option value="${c.title}" ${c.title === s.courseName ? 'selected' : ''}>${c.title}</option>`).join('');
-            } else {
-                editCourseSelect.innerHTML = `<option value="${s.courseName}">${s.courseName}</option>`;
-            }
-
-            const modal = document.getElementById('edit-student-modal');
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('modal-active'), 10);
-        }
-
-        function closeEditModal() {
-            document.getElementById('edit-student-modal').style.display = 'none';
-        }
-
-        function actionUpdateStudent() {
-            const id = document.getElementById('edit-s-id').value;
-            const name = document.getElementById('edit-s-name').value.trim();
-            const phone = document.getElementById('edit-s-phone').value.trim();
-            const courseName = document.getElementById('edit-s-course').value;
-
-            if(!name || !phone) return alert("يرجى التأكد من إدخال الاسم ورقم الهاتف بشكل صحيح.");
-
-            const index = db.students.findIndex(s => s.id == id);
-            if(index > -1) {
-                db.students[index].name = name;
-                db.students[index].phone = phone;
-                db.students[index].courseName = courseName;
-                closeEditModal();
-                refreshUI();
-                alert("✨ تم تحديث بيانات الطالب بنجاح!");
-            }
         }
     </script>
 </body>
